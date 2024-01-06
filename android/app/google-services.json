@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "945032935281",
+    "firebase_url": "https://evpanet-f3ea6.firebaseio.com",
+    "project_id": "evpanet-f3ea6",
+    "storage_bucket": "evpanet-f3ea6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945032935281:android:8c49723dd6a7bcf5ede8d0",
+        "android_client_info": {
+          "package_name": "com.evpanet.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "945032935281-orl0gip3ncc5abficcqcp3ebp52gblea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzqNId3XwLJN1BIdGcst6tZYGpFUpFn8o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "945032935281-orl0gip3ncc5abficcqcp3ebp52gblea.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "945032935281-4l7bigs569ud42sicbupd0ted7o2lib6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.evpanet3"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
