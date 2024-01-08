@@ -75,6 +75,11 @@ Future<Account?> loadAccountDataFromLocalStorage({required String guid}) async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   printLog('Trying to load account data from local storage for guid: $guid');
   String accJsonString = sharedPreferences.getString(guid) ?? '';
+  printLog('jsonString length: ${accJsonString.length}');
+  if (accJsonString.isEmpty) {
+    printLog('loading is empty. returning null');
+    return null;
+  }
   var decodedJson = jsonDecode(accJsonString);
   //print('Account data loaded from local storage: $decodedJson');
   if (decodedJson is Map<String, dynamic>) {
@@ -82,5 +87,6 @@ Future<Account?> loadAccountDataFromLocalStorage({required String guid}) async {
     printLog('Account data loaded from local storage: ${acc.show()}');
     return acc;
   }
+  printLog('loading failed. returning null');
   return null;
 }

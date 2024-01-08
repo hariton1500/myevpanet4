@@ -66,6 +66,7 @@ class _MainWidgetState extends State<MainWidget> {
       // 1. Load Accounts data from local storage
       await loadAccountDataFromLocalStorage(guid: guid).then((acc) {
         if (acc != null) {
+          printLog('adding account ${acc.show()}');
           countL++;
           setState(() {
             appState['accounts'][guid] = acc;
