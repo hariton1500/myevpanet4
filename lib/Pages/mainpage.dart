@@ -3,11 +3,22 @@ import 'package:myevpanet4/Widgets/authwidget.dart';
 import 'package:myevpanet4/Widgets/mainwidget.dart';
 import 'package:myevpanet4/globals.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
   @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  @override
   Widget build(BuildContext context) {
-    return !isRegistered ? const AuthWidget() : const MainWidget();
+    return !isRegistered
+        ? AuthWidget(
+            onSuccess: () {
+              setState(() {});
+            },
+          )
+        : const MainWidget();
   }
 }

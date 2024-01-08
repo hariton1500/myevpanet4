@@ -19,7 +19,7 @@ class _InitLoadingState extends State<InitLoading> {
   @override
   void initState() {
     super.initState();
-    runInit();
+    //runInit();
     Future.delayed(const Duration(seconds: 1), _changeOpacity);
   }
 
@@ -30,7 +30,9 @@ class _InitLoadingState extends State<InitLoading> {
         //mainAxisAlignment: MainAxisAlignment.center,
         child: AnimatedOpacity(
           opacity: opacityLevel,
-          duration: const Duration(seconds: 3),
+          curve: Curves.decelerate,
+          duration: const Duration(seconds: 2),
+          onEnd: () => runInit(),
           child: Text(
             'EvpaNet',
             style: Theme.of(context).textTheme.displayLarge,
@@ -43,7 +45,7 @@ class _InitLoadingState extends State<InitLoading> {
   void runInit() async {
     loadAppState().then((value) {
       //print('init complete');
-      Future.delayed(const Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 1), () {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const MainPage()));
       });

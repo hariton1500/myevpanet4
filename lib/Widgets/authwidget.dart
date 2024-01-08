@@ -5,7 +5,8 @@ import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/globals.dart';
 
 class AuthWidget extends StatefulWidget {
-  const AuthWidget({super.key});
+  const AuthWidget({super.key, required this.onSuccess});
+  final VoidCallback onSuccess;
 
   @override
   State<AuthWidget> createState() => _AuthWidgetState();
@@ -19,12 +20,23 @@ class _AuthWidgetState extends State<AuthWidget> {
     mask: '+# (###) ###-##-##',
     filter: {'#': RegExp(r'[0-9]')},
   );
+  final MaskTextInputFormatter _idNumberFormatter =
+      MaskTextInputFormatter(mask: '######', filter: {"#": RegExp(r'[0-9]')});
+
+  @override
+  void dispose() {
+    _idController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Авторизация'),
+        centerTitle: true,
+        title: Text('Авторизация',
+            style: Theme.of(context).textTheme.headlineMedium),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -39,9 +51,12 @@ class _AuthWidgetState extends State<AuthWidget> {
                     TextFormField(
                       controller: _idController,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [_idNumberFormatter],
                       decoration: const InputDecoration(
                         labelText: 'Введите ваш ID',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -58,11 +73,16 @@ class _AuthWidgetState extends State<AuthWidget> {
                       inputFormatters: [_phoneNumberFormatter],
                       decoration: const InputDecoration(
                         labelText: 'Введите номер телефона',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Пожалуйста, введите номер телефона';
+                        //print(value?.length);
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length != 18) {
+                          return 'Пожалуйста, введите номер телефона полностью';
                         }
                         // Дополнительные проверки по вашим требованиям
                         return null;
@@ -77,8 +97,9 @@ class _AuthWidgetState extends State<AuthWidget> {
                           // Ваш код здесь
                           authenticate(
                                   token: appState['token'],
-                                  phoneNumber: _phoneController.text,
-                                  uid: _idController.text)
+                                  phoneNumber:
+                                      '+${_phoneNumberFormatter.getUnmaskedText()}',
+                                  uid: _idNumberFormatter.getUnmaskedText())
                               .then((value) {
                             if (value.isEmpty) {
                               // Пользователь не найден
@@ -88,10 +109,12 @@ class _AuthWidgetState extends State<AuthWidget> {
                                 ),
                               );
                             } else {
-                              // Пользователи найдены
+                              // Пользователи найдены / сохраняем в локальном хранилище
+                              //print('guids: $value');
+                              saveAppState(guids: value);
                               appState['guids'] = value;
-                              saveAppState(value);
-                              setState(() {});
+                              // Вызываем onSuccess, чтобы перейти к следующему экрану
+                              widget.onSuccess();
                             }
                           });
                         }
