@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
+import 'package:myevpanet4/Pages/logs.dart';
 import 'package:myevpanet4/globals.dart';
 
 class AuthWidget extends StatefulWidget {
@@ -128,34 +129,44 @@ class _AuthWidgetState extends State<AuthWidget> {
               Container(
                 padding: const EdgeInsets.all(16.0),
                 color: Colors.grey[200],
-                child: RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14.0,
+                child: GestureDetector(
+                  onDoubleTap: () {
+                    magic++;
+                    if (magic >= 3) {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LogsPage())).then((value) {
+                        magic = 0;
+                      });
+                    }
+                  },
+                  child: RichText(
+                    text: const TextSpan(
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14.0,
+                      ),
+                      children: [
+                        TextSpan(text: 'Для авторизации введите '),
+                        TextSpan(
+                          text: 'ID и номер телефона.',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(text: '\n\n'),
+                        TextSpan(
+                          text: 'ID: ',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                            text:
+                                'Ваш абонентский идентификатор, он же номер договора, он же номер пополнения баланса\n'),
+                        TextSpan(
+                          text: 'Номер телефона: ',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                          text: 'Который закреплен к вашему абонентскому счету.',
+                        ),
+                      ],
                     ),
-                    children: [
-                      TextSpan(text: 'Для авторизации введите '),
-                      TextSpan(
-                        text: 'ID и номер телефона.',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(text: '\n\n'),
-                      TextSpan(
-                        text: 'ID: ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(
-                          text:
-                              'Ваш абонентский идентификатор, он же номер договора, он же номер пополнения баланса\n'),
-                      TextSpan(
-                        text: 'Номер телефона: ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(
-                        text: 'Который закреплен к вашему абонентскому счету.',
-                      ),
-                    ],
                   ),
                 ),
               ),

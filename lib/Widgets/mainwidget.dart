@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
+import 'package:myevpanet4/Pages/logs.dart';
 import 'package:myevpanet4/globals.dart';
 
 class MainWidget extends StatefulWidget {
@@ -22,7 +23,17 @@ class _MainWidgetState extends State<MainWidget> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: const Text('MyEVPanet'),
+        title: GestureDetector(
+          onDoubleTap: () {
+              magic++;
+              if (magic >= 3) {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LogsPage())).then((value) {
+                  magic = 0;
+                });
+              }
+            },
+          child: const Text('MyEVPanet')
+        ),
       ),
       body: accounts.isEmpty
           ? const Center(child: Text('Загрузка данных...'))
