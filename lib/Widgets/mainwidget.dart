@@ -76,7 +76,7 @@ class _MainWidgetState extends State<MainWidget> {
       await getAccountDataFromAPI(guid: guid, token: token).then((acc) {
         if (acc != null) {
           countR++;
-          print('Account data loaded from API: $guid = ${acc.show()}');
+          printLog('Account data loaded from API: $guid = ${acc.show()}');
           //save account data to local storage
           saveAppState(accountEntry: MapEntry(guid, acc));
           setState(() {
@@ -85,7 +85,7 @@ class _MainWidgetState extends State<MainWidget> {
         }
       });
     }
-    print('Accounts loaded from local storage: $countL');
-    print('Accounts loaded from API: $countR');
+    printLog('Accounts loaded from local storage: $countL');
+    printLog('Accounts loaded from API: $countR');
   }
 }

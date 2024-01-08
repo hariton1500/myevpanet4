@@ -15,9 +15,9 @@ Future<List<String>> authenticate(
       body: {'number': phoneNumber, 'uid': uid},
     );
 
-    print(jsonDecode(response.body));
-    print(response.statusCode);
-    print({'number': phoneNumber, 'uid': uid, 'token': token});
+    printLog(jsonDecode(response.body));
+    printLog(response.statusCode);
+    printLog({'number': phoneNumber, 'uid': uid, 'token': token});
 
     if (response.statusCode >= 200 && response.statusCode < 210) {
       // Парсим ответ и возвращаем массив GUID
@@ -34,7 +34,7 @@ Future<List<String>> authenticate(
       throw Exception('Failed to authenticate user');
     }
   } catch (e) {
-    print(e);
+    printLog(e);
   }
   return [];
 }

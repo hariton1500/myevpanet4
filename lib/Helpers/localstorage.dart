@@ -18,7 +18,7 @@ Future loadAppState() async {
 Future loadGuids() async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   appState['guids'] = sharedPreferences.getStringList('guids') ?? [];
-  print('Guids loaded from local storage: ${guids.length}');
+  printLog('Guids loaded from local storage: ${guids.length}');
 }
 
 /*
@@ -38,14 +38,14 @@ Future loadAccounts() async {
 Future loadToken() async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   appState['token'] = sharedPreferences.getString('token') ?? '';
-  print('Token loaded from local storage: $token');
+  printLog('Token loaded from local storage: $token');
   // check token from google
   String tokenFromFCM = await FirebaseMessaging.instance.getToken() ?? '';
   if (tokenFromFCM != appState['token']) {
     //FCM gave a new token to this app copy
     //saving old token
     sharedPreferences.setString('oldtoken', appState['token']);
-    print('New token from FCM: $tokenFromFCM');
+    printLog('New token from FCM: $tokenFromFCM');
     appState['token'] = tokenFromFCM;
     //saving new token
     sharedPreferences.setString('token', tokenFromFCM);
@@ -63,7 +63,7 @@ Future saveAppState(
     // save account to local storage
     String guid = accountEntry.key;
     Account acc = accountEntry.value;
-    print('Account data saved to local storage: $guid = ${acc.show()}');
+    printLog('Account data saved to local storage: $guid = ${acc.show()}');
     // save account to local storage
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setString(guid, acc.toJson());
@@ -73,13 +73,13 @@ Future saveAppState(
 Future<Account?> loadAccountDataFromLocalStorage({required String guid}) async {
   // load account data from local storage
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  print('Trying to load account data from local storage for guid: $guid');
+  printLog('Trying to load account data from local storage for guid: $guid');
   String accJsonString = sharedPreferences.getString(guid) ?? '';
   var decodedJson = jsonDecode(accJsonString);
   //print('Account data loaded from local storage: $decodedJson');
   if (decodedJson is Map<String, dynamic>) {
     Account acc = Account.fromJson(decodedJson);
-    print('Account data loaded from local storage: ${acc.show()}');
+    printLog('Account data loaded from local storage: ${acc.show()}');
     return acc;
   }
   return null;
