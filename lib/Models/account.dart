@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Account {
@@ -108,6 +109,81 @@ class Account {
           subtitle: Text('$tarifName\nАбонплата: $tarifSum руб.'),
           trailing: Text('Счет:\n${balance - debt} руб.'),
         ),
+      ),
+    );
+  }
+
+  Widget accountWidgetFull(BuildContext context, {VoidCallback? onEdit}) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            //mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              //Text('ID:\n$id'),
+              Text('ФИО: $name'),
+              const Divider(),
+              Text('Адрес: $street, $house, $flat'),
+              const Divider(),
+              Wrap(
+                children: [
+                  Text('Текущий тариф: $tarifName'),
+                  ElevatedButton(
+                      onPressed: () {},
+                      //icon: const Icon(Icons.price_change),
+                      child: const Text('Изменить тариф')),
+                ],
+              ),
+              const Divider(),
+              Text('Абонплата: $tarifSum руб. ($dayPrice руб. в сутки)'),
+              const Divider(),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 10.0,
+                children: [
+                  Text('Счет: $balance руб.'),
+                  ElevatedButton(
+                      onPressed: () {},
+                      //icon: const Icon(Icons.currency_ruble),
+                      child: const Text('Пополнить online')),
+                ],
+              ),
+              debt == 0 ? const SizedBox() : const Divider(),
+              debt == 0 ? const SizedBox() : Text('Задолжность: $debt руб.'),
+              const Divider(),
+              Text(
+                  'Дата окончания действия текущего пакета: $endDate ($daysRemain дн.)'),
+              const Divider(),
+              //Text('Пароль:\n$password'),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 10.0,
+                children: [
+                  Text('Автоматическая активация: ${auto ? 'Да' : 'Нет'}'),
+                  CupertinoSwitch(value: auto, onChanged: (bool value) {}),
+                ],
+              ),
+              const Divider(),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 10.0,
+                children: [
+                  Text(
+                      'Родительский контроль: ${parentControl ? 'Да' : 'Нет'}'),
+                  CupertinoSwitch(
+                      value: parentControl, onChanged: (bool value) {}),
+                ],
+              ),
+              ip == '' ? const SizedBox() : const Divider(),
+              ip == '' ? const SizedBox() : Text('IP адрес: $ip'),
+              //Text('Рабочий IP:\n${isRealIp? 'Да' : 'Нет'}'),
+              //Text('Разрешенные тарифы:\n${tarifs.join(', ')}'),
+              //Text('Разрешенные тарифы:\n${tarifs.join(', ')}'),
+            ]),
       ),
     );
   }

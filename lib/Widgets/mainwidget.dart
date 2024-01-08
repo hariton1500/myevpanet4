@@ -1,7 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
+import 'package:myevpanet4/Pages/accountpage.dart';
 import 'package:myevpanet4/Pages/logs.dart';
+import 'package:myevpanet4/Pages/messagespage.dart';
 import 'package:myevpanet4/globals.dart';
 
 class MainWidget extends StatefulWidget {
@@ -16,6 +19,11 @@ class _MainWidgetState extends State<MainWidget> {
   void initState() {
     super.initState();
     runAccountsLoading();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      printLog('onMessage: $message');
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => MessagesPage(message: message)));
+    });
   }
 
   @override
@@ -24,24 +32,33 @@ class _MainWidgetState extends State<MainWidget> {
         child: Scaffold(
       appBar: AppBar(
         title: GestureDetector(
-          onDoubleTap: () {
+            //secret section to make appbar double tapable for getting to logs page
+            onDoubleTap: () {
               magic++;
               if (magic >= 3) {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LogsPage())).then((value) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(
+                        builder: (context) => const LogsPage()))
+                    .then((value) {
                   magic = 0;
                 });
               }
             },
-          child: const Text('MyEVPanet')
-        ),
+            child: const Text('Мой EvpaNet')),
       ),
       body: accounts.isEmpty
           ? const Center(child: Text('Загрузка данных...'))
           : SingleChildScrollView(
               child: Column(
                 children: accounts.values
-                    .map((e) => e.accountWidgetSmall(
-                        accounts.values.toList().indexOf(e) + 3))
+                    .map((e) => GestureDetector(
+                          onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AccountPage(account: e))),
+                          child: e.accountWidgetSmall(
+                              accounts.values.toList().indexOf(e) + 3),
+                        ))
                     .toList(),
               ),
             ),
@@ -73,6 +90,9 @@ class _MainWidgetState extends State<MainWidget> {
           });
         }
       });
+    }
+    printLog('Accounts loaded from local storage: $countL');
+    for (var guid in guids) {
       // 2. Load Accounts data from API
       await getAccountDataFromAPI(guid: guid, token: token).then((acc) {
         if (acc != null) {
@@ -86,7 +106,6 @@ class _MainWidgetState extends State<MainWidget> {
         }
       });
     }
-    printLog('Accounts loaded from local storage: $countL');
     printLog('Accounts loaded from API: $countR');
   }
 }
