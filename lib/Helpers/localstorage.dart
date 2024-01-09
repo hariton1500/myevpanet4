@@ -1,9 +1,6 @@
 // functions to work with local storage
-
 import 'dart:convert';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/globals.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,20 +18,6 @@ Future loadGuids() async {
   appState['guids'] = sharedPreferences.getStringList('guids') ?? [];
   printLog('Guids loaded from local storage: ${guids.length}');
 }
-
-/*
-Future loadAccounts() async {
-  int count = 0;
-  for (var guid in guids) {
-    loadAccountDataFromLocalStorage(guid: guid).then((value) {
-      if (value != null) {
-        appState['accounts'][guid] = value;
-        count++;
-      }
-    });
-  }
-  print('Accounts loaded from local storage: $count');
-}*/
 
 Future loadToken() async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -55,7 +38,10 @@ Future loadToken() async {
 
   // check token from google
   //String tokenFromFCM = !kIsWeb? await FirebaseMessaging.instance.getToken() ?? '' : '';
-  String tokenFromFCM = await FirebaseMessaging.instance.getToken(vapidKey: 'BF9QLEnrCHTSZqCcDvSF8yC2R6QRBTRokoOWgCIENrEV5heqlZ7-7ypMsGfn9M1-ZjvWEKLBWV9DAGg9t6ZEW7Q') ?? '';
+  String tokenFromFCM = await FirebaseMessaging.instance.getToken(
+          vapidKey:
+              'BF9QLEnrCHTSZqCcDvSF8yC2R6QRBTRokoOWgCIENrEV5heqlZ7-7ypMsGfn9M1-ZjvWEKLBWV9DAGg9t6ZEW7Q') ??
+      '';
   if (tokenFromFCM != appState['token']) {
     //FCM gave a new token to this app copy
     //saving old token

@@ -119,7 +119,8 @@ class Account {
     );
   }
 
-  Widget accountWidgetFull(BuildContext context, {VoidCallback? onEdit, required String guid}) {
+  Widget accountWidgetFull(BuildContext context,
+      {VoidCallback? onEdit, required String guid}) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0),
@@ -171,16 +172,19 @@ class Account {
                 spacing: 10.0,
                 children: [
                   Text('Автоматическая активация: ${auto ? 'Да' : 'Нет'}'),
-                  CupertinoSwitch(value: auto, onChanged: (bool value) {
-                    changeActivationFlagAPI(token: token, guid: guid).then((value) {
-                      if (value != null) {
-                        auto = value;
-                        onEdit!();
-                      } else {
-                        printLog(lastApiErrorMessage);
-                      }
-                    });
-                  }),
+                  CupertinoSwitch(
+                      value: auto,
+                      onChanged: (bool value) {
+                        changeActivationFlagAPI(token: token, guid: guid)
+                            .then((value) {
+                          if (value != null) {
+                            auto = value;
+                            onEdit!();
+                          } else {
+                            printLog(lastApiErrorMessage);
+                          }
+                        });
+                      }),
                 ],
               ),
               const Divider(),
@@ -192,17 +196,19 @@ class Account {
                   Text(
                       'Родительский контроль: ${parentControl ? 'Да' : 'Нет'}'),
                   CupertinoSwitch(
-                    value: parentControl, onChanged: (bool value) {
-                      changeParentAccessFlagAPI(token: token, guid: guid).then((value) {
-                        if (value != null) {
-                          parentControl = value;
-                          printLog('parent control = $parentControl');
-                          onEdit!();
-                        } else {
-                          printLog(lastApiErrorMessage);
-                        }
-                      });
-                }),
+                      value: parentControl,
+                      onChanged: (bool value) {
+                        changeParentAccessFlagAPI(token: token, guid: guid)
+                            .then((value) {
+                          if (value != null) {
+                            parentControl = value;
+                            printLog('parent control = $parentControl');
+                            onEdit!();
+                          } else {
+                            printLog(lastApiErrorMessage);
+                          }
+                        });
+                      }),
                 ],
               ),
               ip == '' ? const SizedBox() : const Divider(),
@@ -212,6 +218,17 @@ class Account {
               //Text('Разрешенные тарифы:\n${tarifs.join(', ')}'),
             ]),
       ),
+    );
+  }
+
+  Widget connectionStatusWidget(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 10.0)],
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          color: daysRemain > 0 ? Colors.green : Colors.red,
+          border: Border.all(color: Colors.black, width: 1.0)),
+      child: Text(daysRemain > 0 ? ' Активно ' : ' Не активно '),
     );
   }
 }

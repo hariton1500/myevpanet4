@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Pages/accountpage.dart';
+import 'package:myevpanet4/Pages/accountpage2.dart';
 import 'package:myevpanet4/Pages/logs.dart';
 import 'package:myevpanet4/Pages/messagespage.dart';
 import 'package:myevpanet4/globals.dart';
@@ -54,8 +55,8 @@ class _MainWidgetState extends State<MainWidget> {
                     .map((e) => GestureDetector(
                           onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      AccountPage(account: e.value, guid: e.key))),
+                                  builder: (context) => AccountPage2(
+                                      account: e.value, guid: e.key))),
                           child: e.value.accountWidgetSmall(
                               accounts.values.toList().indexOf(e.value) + 3),
                         ))
