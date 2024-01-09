@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/globals.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,8 +40,22 @@ Future loadToken() async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   appState['token'] = sharedPreferences.getString('token') ?? '';
   printLog('Token loaded from local storage: $token');
+  //for web and apple
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+  print('User granted permission: ${settings.authorizationStatus}');
+
   // check token from google
-  String tokenFromFCM = await FirebaseMessaging.instance.getToken() ?? '';
+  //String tokenFromFCM = !kIsWeb? await FirebaseMessaging.instance.getToken() ?? '' : '';
+  String tokenFromFCM = await FirebaseMessaging.instance.getToken(vapidKey: 'BF9QLEnrCHTSZqCcDvSF8yC2R6QRBTRokoOWgCIENrEV5heqlZ7-7ypMsGfn9M1-ZjvWEKLBWV9DAGg9t6ZEW7Q') ?? '';
   if (tokenFromFCM != appState['token']) {
     //FCM gave a new token to this app copy
     //saving old token

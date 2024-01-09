@@ -50,14 +50,14 @@ class _MainWidgetState extends State<MainWidget> {
           ? const Center(child: Text('Загрузка данных...'))
           : SingleChildScrollView(
               child: Column(
-                children: accounts.values
+                children: accounts.entries
                     .map((e) => GestureDetector(
                           onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      AccountPage(account: e))),
-                          child: e.accountWidgetSmall(
-                              accounts.values.toList().indexOf(e) + 3),
+                                      AccountPage(account: e.value, guid: e.key))),
+                          child: e.value.accountWidgetSmall(
+                              accounts.values.toList().indexOf(e.value) + 3),
                         ))
                     .toList(),
               ),

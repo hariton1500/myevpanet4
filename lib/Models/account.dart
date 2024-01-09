@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:myevpanet4/Helpers/api.dart';
+import 'package:myevpanet4/globals.dart';
 
 class Account {
   String? guid;
@@ -67,6 +69,10 @@ class Account {
     isRealIp = json['isRealIp'] == '1';
   }
 
+  Account reload() {
+    return this;
+  }
+
   String toJson() {
     return json.encode({
       //'guid': guid,
@@ -113,7 +119,7 @@ class Account {
     );
   }
 
-  Widget accountWidgetFull(BuildContext context, {VoidCallback? onEdit}) {
+  Widget accountWidgetFull(BuildContext context, {VoidCallback? onEdit, required String guid}) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0),
@@ -127,6 +133,8 @@ class Account {
               Text('Адрес: $street, $house, $flat'),
               const Divider(),
               Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 10,
                 children: [
                   Text('Текущий тариф: $tarifName'),
                   ElevatedButton(
@@ -163,7 +171,16 @@ class Account {
                 spacing: 10.0,
                 children: [
                   Text('Автоматическая активация: ${auto ? 'Да' : 'Нет'}'),
-                  CupertinoSwitch(value: auto, onChanged: (bool value) {}),
+                  CupertinoSwitch(value: auto, onChanged: (bool value) {
+                    changeActivationFlagAPI(token: token, guid: guid).then((value) {
+                      if (value != null) {
+                        auto = value;
+                        onEdit!();
+                      } else {
+                        printLog(lastApiErrorMessage);
+                      }
+                    });
+                  }),
                 ],
               ),
               const Divider(),
@@ -175,7 +192,17 @@ class Account {
                   Text(
                       'Родительский контроль: ${parentControl ? 'Да' : 'Нет'}'),
                   CupertinoSwitch(
-                      value: parentControl, onChanged: (bool value) {}),
+                    value: parentControl, onChanged: (bool value) {
+                      changeParentAccessFlagAPI(token: token, guid: guid).then((value) {
+                        if (value != null) {
+                          parentControl = value;
+                          printLog('parent control = $parentControl');
+                          onEdit!();
+                        } else {
+                          printLog(lastApiErrorMessage);
+                        }
+                      });
+                }),
                 ],
               ),
               ip == '' ? const SizedBox() : const Divider(),
