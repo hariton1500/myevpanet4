@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:myevpanet4/Dialogs/changetariff.dart';
 import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/globals.dart';
 
@@ -85,7 +87,7 @@ Future<bool?> changeActivationFlagAPI(
 
     if (response.statusCode >= 200 && response.statusCode < 210) {
       var decoded = jsonDecode(response.body);
-      return decoded['message']['value'] == 0 ? false : true;
+      return decoded['message']['value'].toString() == '0' ? false : true;
     } else if (response.statusCode >= 400 && response.statusCode < 410) {
       lastApiErrorMessage = jsonDecode(response.body)['message'];
     } else {
@@ -113,7 +115,7 @@ Future<bool?> changeParentAccessFlagAPI(
 
     if (response.statusCode >= 200 && response.statusCode < 210) {
       var decoded = jsonDecode(response.body);
-      return decoded['message']['value'] == 0 ? false : true;
+      return decoded['message']['value'].toString() == '0' ? false : true;
     } else if (response.statusCode >= 400 && response.statusCode < 410) {
       lastApiErrorMessage = jsonDecode(response.body)['message'];
     } else {
@@ -123,5 +125,31 @@ Future<bool?> changeParentAccessFlagAPI(
   } catch (e) {
     printLog('[changeParentFlagAPI] $e');
   }
+  return null;
+}
+
+Future<String?> updateTarifWithConfirmation(BuildContext context, String token, String tarifId, String guid) async {
+  // Отображаем диалог подтверждения
+  await showConfirmationDialogChangeTariff(context, () async {
+    // После подтверждения пользователя, фактически изменяем тариф
+    final response = await http.patch(
+      Uri.parse('https://evpanet.com/api/apk/user/tarif'),
+      headers: {'token': token},
+      body: {'tarif': tarifId, 'guid': guid},
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 210) {
+      print(response.body);
+      Map<String, dynamic> decoded = json.decode(response.body);
+      Navigator.of(context).pop(); // Закрываем диалог
+      return decoded['message']['tarif_id'];
+    } else if (response.statusCode >= 400 && response.statusCode < 410) {
+      lastApiErrorMessage = jsonDecode(response.body)['message'];
+    }
+      else {
+      // Обработка ошибок
+      throw Exception('Failed to update tarif');
+    }
+  });
   return null;
 }

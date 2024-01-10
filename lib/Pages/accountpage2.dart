@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:myevpanet4/Dialogs/changetariff.dart';
+import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Models/account.dart';
+import 'package:myevpanet4/globals.dart';
 
 class AccountPage2 extends StatefulWidget {
   const AccountPage2({super.key, required this.account, required this.guid});
@@ -42,9 +45,9 @@ class _AccountPage2State extends State<AccountPage2> {
                 Text('Абонентский счет: ${account.balance} руб.'),
                 Text('Текущий тариф: ${account.tarifName}'),
                 Text(
-                    'Абонплата: ${account.tarifSum} руб. (${account.dayPrice} руб. в сутки)'),
-                Text(
-                    'Дата окончания действия текущего пакета: ${account.endDate} (${account.daysRemain} дн.)'),
+                    'Абонплата: ${account.tarifSum} руб. (${(account.tarifSum / 30).toStringAsFixed(2)} руб. в сутки)'),
+                if (account.daysRemain >= 0) ...[Text(
+                    'Дата окончания действия текущего пакета: ${account.endDate} (${account.daysRemain} дн.)')],
                 const SizedBox(height: 32),
                 const Text(
                   'Информация о подключении',
@@ -85,35 +88,42 @@ class _AccountPage2State extends State<AccountPage2> {
                               'Стоимость: ${tariff['sum']} руб.',
                               style: const TextStyle(
                                   fontSize: 10,
-                                  //fontWeight: FontWeight.bold,
                                   fontStyle: FontStyle.italic),
                             ),
                           ],
                         ),
                       );
                     }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        //account.tarifName = value?.values.first!;
-                      });
+                    onChanged: (value) async {
+                      //showConfirmationDialogChangeTariff(context, () {setState(() {account.tarifName = value?.values.first!;});});
+                      //print('---------------\n$value\n===============');
+                      var result = await updateTarifWithConfirmation(context, token, value!['id'], widget.guid);
+                      print('---------------\n$result\n===============');
+                      if (result != null) {
+                        setState(() {
+                          account.tarifName;
+                        });
+                      }
                     },
                   ),
                 ),
                 SwitchListTile(
                   title: const Text('Автоматическая активация пакета'),
                   value: account.auto,
-                  onChanged: (value) {
+                  onChanged: (value) async {
+                    var result = await changeActivationFlagAPI(token: token, guid: widget.guid);
                     setState(() {
-                      account.auto = value;
+                      if (result != null) account.auto = result;
                     });
                   },
                 ),
                 SwitchListTile(
                   title: const Text('Родительский контроль'),
                   value: account.parentControl,
-                  onChanged: (value) {
+                  onChanged: (value) async {
+                    var result = await changeParentAccessFlagAPI(token: token, guid: widget.guid);
                     setState(() {
-                      account.parentControl = value;
+                      if (result != null) account.parentControl = result;
                     });
                   },
                 ),

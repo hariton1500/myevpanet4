@@ -29,7 +29,7 @@ class _MainWidgetState extends State<MainWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return accounts.entries.length == 1 ? AccountPage2(account: accounts.entries.first.value, guid: accounts.entries.first.key) : SafeArea(
         child: Scaffold(
       appBar: AppBar(
         title: GestureDetector(
@@ -63,18 +63,6 @@ class _MainWidgetState extends State<MainWidget> {
                     .toList(),
               ),
             ),
-      /*bottomNavigationBar: NavigationBar(destinations: const [
-        NavigationDestination(icon: Icon(Icons.abc), label: 'label'),
-        NavigationDestination(icon: Icon(Icons.abc), label: 'label')
-      ]),
-      persistentFooterButtons: [
-        TextButton(onPressed: () {}, child: const Text('dat')),
-        TextButton(onPressed: () {}, child: const Text('dat')),
-        TextButton(onPressed: () {}, child: const Text('dat')),
-        TextButton(onPressed: () {}, child: const Text('dat')),
-      ],
-      persistentFooterAlignment: AlignmentDirectional.topCenter,*/
-      //bottomSheet: TextButton(onPressed: () {}, child: const Text('bottom')),
     ));
   }
 
