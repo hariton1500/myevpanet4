@@ -14,9 +14,17 @@ class AccountPage2 extends StatefulWidget {
 }
 
 class _AccountPage2State extends State<AccountPage2> {
+
   @override
   Widget build(BuildContext context) {
     Account account = widget.account;
+    List? filteredTarifs;
+    try {
+      filteredTarifs = account.tarifs.where((element) => int.parse(element['sum']) < account.balance).toList();
+    } catch (e) {
+      printLog(e);
+    }
+    print('filtered tarifs: $filteredTarifs');
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
@@ -69,15 +77,18 @@ class _AccountPage2State extends State<AccountPage2> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                ListTile(
+                !account.auto ? ListTile(
                   title: const Text('Выбор тарифа:'),
                   trailing: DropdownButton<Map<String, dynamic>>(
-                    value: account.tarifs.firstWhere(
+                    value: filteredTarifs?.firstWhere(
                         (element) =>
                             element['sum'].toString() ==
                             account.tarifSum.toString(),
                         orElse: () => null),
-                    items: account.tarifs.map((tariff) {
+                    disabledHint: const Text('Не достаточно средств'),
+                    hint: const Text('Выберите тариф'),
+                    //need to filter tariffs with sum lower then abon have money
+                    items: filteredTarifs?.map((tariff) {
                       return DropdownMenuItem<Map<String, dynamic>>(
                         value: tariff,
                         child: Column(
@@ -106,7 +117,20 @@ class _AccountPage2State extends State<AccountPage2> {
                       }
                     },
                   ),
-                ),
+                ) : ListTile(title: RichText(
+                    text: const TextSpan(
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14.0,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'Для возможности смены тарифа нужно отключить Автоматическую активацию пакета',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  )),
                 SwitchListTile(
                   title: const Text('Автоматическая активация пакета'),
                   value: account.auto,
