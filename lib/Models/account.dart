@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myevpanet4/Helpers/api.dart';
+import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/globals.dart';
 
 class Account {
@@ -69,8 +70,14 @@ class Account {
     isRealIp = json['isRealIp'] == '1';
   }
 
-  Account reload() {
-    return this;
+  Future<Account> reload({required String token, required String guid}) async {
+    var account = await getAccountDataFromAPI(token: token, guid: guid);
+    if (account != null) {
+      saveAccountDataToLocalStorage(acc: account, guid: guid);
+      return account;
+    } else {
+      return this;
+    }
   }
 
   String toJson() {
@@ -110,9 +117,18 @@ class Account {
             borderRadius: BorderRadius.all(Radius.circular(20))),
         elevation: index.toDouble() + 3,
         child: ListTile(
-          leading: Text('ID:\n$id'),
+          leading: Column(
+            children: [
+              Text(
+                'ID:\n$id',
+              ),
+              Icon(Icons.circle,
+                  color: daysRemain >= 0 ? Colors.green : Colors.red)
+            ],
+          ),
           title: Text(name),
-          subtitle: Text('$tarifName\nАбонплата: $tarifSum руб.'),
+          subtitle: Text(
+              '$tarifName\nАбонплата: $tarifSum руб.\nАдрес: $street, $house, $flat'),
           trailing: Text('Счет:\n${balance - debt} руб.'),
         ),
       ),

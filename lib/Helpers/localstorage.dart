@@ -71,6 +71,16 @@ Future saveAppState(
   }
 }
 
+Future saveAccountDataToLocalStorage(
+    {required Account acc, required String guid}) async {
+  // save account to local storage
+  //String guid = acc.guid;
+  printLog('Account data saved to local storage: $guid = ${acc.show()}');
+  // save account to local storage
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  sharedPreferences.setString(guid, acc.toJson());
+}
+
 Future<Account?> loadAccountDataFromLocalStorage({required String guid}) async {
   // load account data from local storage
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();

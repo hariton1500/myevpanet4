@@ -13,7 +13,7 @@ Future<List<String>> authenticate(
   try {
     var url = Uri.https('evpanet.com', '/api/apk/login/user');
     final response = await http.post(
-      url,//Uri.parse('https://evpanet.com/api/apk/login/user'),
+      url, //Uri.parse('https://evpanet.com/api/apk/login/user'),
       headers: {'token': token},
       body: {'number': phoneNumber, 'uid': uid},
     );
@@ -44,42 +44,40 @@ Future<List<String>> authenticate(
 
 Future<Account?> getAccountDataFromAPI(
     {required String token, required String guid}) async {
-    try {
-      final response = await http.get(
-        Uri.parse('https://evpanet.com/api/apk/user/info/$guid'),
-        headers: {'token': token},
-      );
+  try {
+    final response = await http.get(
+      Uri.parse('https://evpanet.com/api/apk/user/info/$guid'),
+      headers: {'token': token},
+    );
 
-      //print(jsonDecode(response.body));
-      //print(response.statusCode);
-      //print({'guid': guid, 'token': token});
+    //print(jsonDecode(response.body));
+    //print(response.statusCode);
+    //print({'guid': guid, 'token': token});
 
-      if (response.statusCode >= 200 && response.statusCode < 210) {
-        // Парсим ответ и возвращаем данные об абоненте
-        var decoded = jsonDecode(response.body);
-        return Account.loadFromServerJson(
-            (decoded['message']['userinfo'] as Map<String, dynamic>), guid);
-      } else if (response.statusCode >= 400 && response.statusCode < 410) {
-        lastApiErrorMessage = jsonDecode(response.body)['message'];
-      } else {
-        throw Exception('Failed to get user information');
-      }
-      return null;
-      
-    } catch (e) {
-      printLog(e);
+    if (response.statusCode >= 200 && response.statusCode < 210) {
+      // Парсим ответ и возвращаем данные об абоненте
+      var decoded = jsonDecode(response.body);
+      return Account.loadFromServerJson(
+          (decoded['message']['userinfo'] as Map<String, dynamic>), guid);
+    } else if (response.statusCode >= 400 && response.statusCode < 410) {
+      lastApiErrorMessage = jsonDecode(response.body)['message'];
+    } else {
+      throw Exception('Failed to get user information');
     }
     return null;
+  } catch (e) {
+    printLog(e);
+  }
+  return null;
 }
 
 Future<bool?> changeActivationFlagAPI(
     {required String token, required String guid}) async {
   try {
     final response = await http.put(
-      Uri.parse('https://evpanet.com/api/apk/user/auto_activation/'),
-      headers: {'token': token},
-      body: {'guid': guid}
-    );
+        Uri.parse('https://evpanet.com/api/apk/user/auto_activation/'),
+        headers: {'token': token},
+        body: {'guid': guid});
 
     print(jsonDecode(response.body));
     print(response.statusCode);
@@ -104,10 +102,9 @@ Future<bool?> changeParentAccessFlagAPI(
     {required String token, required String guid}) async {
   try {
     final response = await http.put(
-      Uri.parse('https://evpanet.com/api/apk/user/parent_control/'),
-      headers: {'token': token},
-      body: {'guid': guid}
-    );
+        Uri.parse('https://evpanet.com/api/apk/user/parent_control/'),
+        headers: {'token': token},
+        body: {'guid': guid});
 
     print(jsonDecode(response.body));
     print(response.statusCode);
@@ -128,28 +125,37 @@ Future<bool?> changeParentAccessFlagAPI(
   return null;
 }
 
-Future<String?> updateTarifWithConfirmation(BuildContext context, String token, String tarifId, String guid) async {
+Future<Map<String, dynamic>?> updateTarifWithConfirmation(
+    BuildContext context, String token, String tarifId, String guid) async {
+  //set init result value
+  Map<String, dynamic>? result;
   // Отображаем диалог подтверждения
   await showConfirmationDialogChangeTariff(context, () async {
     // После подтверждения пользователя, фактически изменяем тариф
-    final response = await http.patch(
-      Uri.parse('https://evpanet.com/api/apk/user/tarif'),
-      headers: {'token': token},
-      body: {'tarif': tarifId, 'guid': guid},
-    );
+    try {
+      final response = await http.patch(
+        Uri.parse('https://evpanet.com/api/apk/user/tarif'),
+        headers: {'token': token},
+        body: {'tarif': tarifId, 'guid': guid},
+      );
 
-    if (response.statusCode >= 200 && response.statusCode <= 210) {
-      print(response.body);
-      Map<String, dynamic> decoded = json.decode(response.body);
-      Navigator.of(context).pop(); // Закрываем диалог
-      return decoded['message']['tarif_id'];
-    } else if (response.statusCode >= 400 && response.statusCode < 410) {
-      lastApiErrorMessage = jsonDecode(response.body)['message'];
-    }
-      else {
-      // Обработка ошибок
-      throw Exception('Failed to update tarif');
+      if (response.statusCode >= 200 && response.statusCode <= 210) {
+        print('resp.body = ${response.body}');
+        Map<String, dynamic> decoded = json.decode(response.body);
+        print(decoded['message']['tarif_id']);
+        Navigator.of(context)
+            .pop(decoded['message']['tarif_id']); // Закрываем диалог
+        result = decoded['message'];
+      } else if (response.statusCode >= 400 && response.statusCode < 410) {
+        lastApiErrorMessage = jsonDecode(response.body)['message'];
+      } else {
+        // Обработка ошибок
+        throw Exception('Failed to update tarif');
+      }
+    } catch (e) {
+      printLog(e);
+      Navigator.of(context).pop();
     }
   });
-  return null;
+  return result;
 }

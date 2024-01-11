@@ -29,41 +29,56 @@ class _MainWidgetState extends State<MainWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return accounts.entries.length == 1 ? AccountPage2(account: accounts.entries.first.value, guid: accounts.entries.first.key) : SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        title: GestureDetector(
-            //secret section to make appbar double tapable for getting to logs page
-            onDoubleTap: () {
-              magic++;
-              if (magic >= 3) {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(
-                        builder: (context) => const LogsPage()))
-                    .then((value) {
-                  magic = 0;
-                });
-              }
-            },
-            child: const Text('Мой EvpaNet')),
-      ),
-      body: accounts.isEmpty
-          ? const Center(child: Text('Загрузка данных...'))
-          : SingleChildScrollView(
-              child: Column(
-                children: accounts.entries
-                    .map((e) => GestureDetector(
-                          onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => AccountPage2(
-                                      account: e.value, guid: e.key))),
-                          child: e.value.accountWidgetSmall(
-                              accounts.values.toList().indexOf(e.value) + 3),
-                        ))
-                    .toList(),
-              ),
+    return accounts.entries.length == 1
+        ? AccountPage2(
+            account: accounts.entries.first.value,
+            guid: accounts.entries.first.key,
+            update: (acc) {},
+          )
+        : SafeArea(
+            child: Scaffold(
+            appBar: AppBar(
+              title: GestureDetector(
+                  //secret section to make appbar double tapable for getting to logs page
+                  onDoubleTap: () {
+                    magic++;
+                    if (magic >= 3) {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => const LogsPage()))
+                          .then((value) {
+                        magic = 0;
+                      });
+                    }
+                  },
+                  child: const Text('Мой EvpaNet')),
             ),
-    ));
+            body: accounts.isEmpty
+                ? const Center(child: Text('Загрузка данных...'))
+                : SingleChildScrollView(
+                    child: Column(
+                      children: accounts.entries
+                          .map((e) => GestureDetector(
+                                onTap: () => Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) => AccountPage2(
+                                              account: e.value,
+                                              guid: e.key,
+                                              update: (acc) {
+                                                setState(() {
+                                                  //e = MapEntry(e.key, acc);
+                                                  accounts[e.key] = acc;
+                                                });
+                                              },
+                                            ))),
+                                child: e.value.accountWidgetSmall(
+                                    accounts.values.toList().indexOf(e.value) +
+                                        3),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+          ));
   }
 
   Future<void> runAccountsLoading() async {

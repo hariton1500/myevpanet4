@@ -1,26 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:myevpanet4/Dialogs/changetariff.dart';
 import 'package:myevpanet4/Helpers/api.dart';
+import 'package:myevpanet4/Helpers/localstorage.dart';
+import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
 import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/globals.dart';
 
 class AccountPage2 extends StatefulWidget {
-  const AccountPage2({super.key, required this.account, required this.guid});
-  final Account account;
+  AccountPage2(
+      {super.key,
+      required this.account,
+      required this.guid,
+      required this.update});
+  Account account;
   final String guid;
+  final void Function(Account acc) update;
 
   @override
   State<AccountPage2> createState() => _AccountPage2State();
 }
 
 class _AccountPage2State extends State<AccountPage2> {
-
   @override
   Widget build(BuildContext context) {
     Account account = widget.account;
     List? filteredTarifs;
     try {
-      filteredTarifs = account.tarifs.where((element) => int.parse(element['sum']) < account.balance).toList();
+      filteredTarifs = account.tarifs
+          .where((element) =>
+              int.parse(element['sum'].toString()) < account.balance)
+          .toList();
     } catch (e) {
       printLog(e);
     }
@@ -54,8 +62,10 @@ class _AccountPage2State extends State<AccountPage2> {
                 Text('Текущий тариф: ${account.tarifName}'),
                 Text(
                     'Абонплата: ${account.tarifSum} руб. (${(account.tarifSum / 30).toStringAsFixed(2)} руб. в сутки)'),
-                if (account.daysRemain >= 0) ...[Text(
-                    'Дата окончания действия текущего пакета: ${account.endDate} (${account.daysRemain} дн.)')],
+                if (account.daysRemain >= 0) ...[
+                  Text(
+                      'Дата окончания действия текущего пакета: ${account.endDate} (${account.daysRemain} дн.)')
+                ],
                 const SizedBox(height: 32),
                 const Text(
                   'Информация о подключении',
@@ -77,65 +87,86 @@ class _AccountPage2State extends State<AccountPage2> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                !account.auto ? ListTile(
-                  title: const Text('Выбор тарифа:'),
-                  trailing: DropdownButton<Map<String, dynamic>>(
-                    value: filteredTarifs?.firstWhere(
-                        (element) =>
-                            element['sum'].toString() ==
-                            account.tarifSum.toString(),
-                        orElse: () => null),
-                    disabledHint: const Text('Не достаточно средств'),
-                    hint: const Text('Выберите тариф'),
-                    //need to filter tariffs with sum lower then abon have money
-                    items: filteredTarifs?.map((tariff) {
-                      return DropdownMenuItem<Map<String, dynamic>>(
-                        value: tariff,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                !account.auto
+                    ? ListTile(
+                        title: const Text('Выбор тарифа:'),
+                        trailing: DropdownButton<Map<String, dynamic>>(
+                          value: filteredTarifs?.firstWhere(
+                              (element) =>
+                                  element['sum'].toString() ==
+                                  account.tarifSum.toString(),
+                              orElse: () => null),
+                          disabledHint: const Text('Не достаточно средств'),
+                          hint: const Text('Выберите тариф'),
+                          //need to filter tariffs with sum lower then abon have money
+                          items: filteredTarifs?.map((tariff) {
+                            return DropdownMenuItem<Map<String, dynamic>>(
+                              value: tariff,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(tariff['name']),
+                                  Text(
+                                    'Стоимость: ${tariff['sum']} руб.',
+                                    style: const TextStyle(
+                                        fontSize: 10,
+                                        fontStyle: FontStyle.italic),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) async {
+                            //showConfirmationDialogChangeTariff(context, () {setState(() {account.tarifName = value?.values.first!;});});
+                            //print('---------------\n$value\n===============');
+                            var result = await updateTarifWithConfirmation(
+                                context, token, value!['id'], widget.guid);
+                            print('---------------\n$result\n===============');
+                            if (result != null) {
+                              showScaffoldMessage(
+                                  message: 'Тариф успешно изменен',
+                                  context: context);
+                              Account? tempAcc = await getAccountDataFromAPI(
+                                  token: token, guid: widget.guid);
+                              if (tempAcc != null) {
+                                widget.update(tempAcc);
+                                setState(() {
+                                  widget.account = tempAcc;
+                                });
+
+                                saveAccountDataToLocalStorage(
+                                    acc: account, guid: widget.guid);
+                              }
+                            } else {
+                              showScaffoldMessage(
+                                  message: 'Ошибка изменения тарифа',
+                                  context: context);
+                            }
+                          },
+                        ),
+                      )
+                    : ListTile(
+                        title: RichText(
+                        text: const TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14.0,
+                          ),
                           children: [
-                            Text(tariff['name']),
-                            Text(
-                              'Стоимость: ${tariff['sum']} руб.',
-                              style: const TextStyle(
-                                  fontSize: 10,
-                                  fontStyle: FontStyle.italic),
+                            TextSpan(
+                              text:
+                                  'Для возможности смены тарифа нужно отключить Автоматическую активацию пакета',
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (value) async {
-                      //showConfirmationDialogChangeTariff(context, () {setState(() {account.tarifName = value?.values.first!;});});
-                      //print('---------------\n$value\n===============');
-                      var result = await updateTarifWithConfirmation(context, token, value!['id'], widget.guid);
-                      print('---------------\n$result\n===============');
-                      if (result != null) {
-                        setState(() {
-                          account.tarifName;
-                        });
-                      }
-                    },
-                  ),
-                ) : ListTile(title: RichText(
-                    text: const TextSpan(
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14.0,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: 'Для возможности смены тарифа нужно отключить Автоматическую активацию пакета',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  )),
+                      )),
                 SwitchListTile(
                   title: const Text('Автоматическая активация пакета'),
                   value: account.auto,
                   onChanged: (value) async {
-                    var result = await changeActivationFlagAPI(token: token, guid: widget.guid);
+                    var result = await changeActivationFlagAPI(
+                        token: token, guid: widget.guid);
                     setState(() {
                       if (result != null) account.auto = result;
                     });
@@ -145,7 +176,8 @@ class _AccountPage2State extends State<AccountPage2> {
                   title: const Text('Родительский контроль'),
                   value: account.parentControl,
                   onChanged: (value) async {
-                    var result = await changeParentAccessFlagAPI(token: token, guid: widget.guid);
+                    var result = await changeParentAccessFlagAPI(
+                        token: token, guid: widget.guid);
                     setState(() {
                       if (result != null) account.parentControl = result;
                     });
