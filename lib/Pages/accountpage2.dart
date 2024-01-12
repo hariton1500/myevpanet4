@@ -3,15 +3,16 @@ import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
 import 'package:myevpanet4/Models/account.dart';
+import 'package:myevpanet4/Pages/chat.dart';
 import 'package:myevpanet4/globals.dart';
 
 class AccountPage2 extends StatefulWidget {
-  AccountPage2(
+  const AccountPage2(
       {super.key,
-      required this.account,
+      //required this.account,
       required this.guid,
       required this.update});
-  Account account;
+  //final Account account;
   final String guid;
   final void Function(Account acc) update;
 
@@ -22,10 +23,10 @@ class AccountPage2 extends StatefulWidget {
 class _AccountPage2State extends State<AccountPage2> {
   @override
   Widget build(BuildContext context) {
-    Account account = widget.account;
+    var account = accounts[widget.guid];
     List? filteredTarifs;
     try {
-      filteredTarifs = account.tarifs
+      filteredTarifs = account?.tarifs
           .where((element) =>
               int.parse(element['sum'].toString()) < account.balance)
           .toList();
@@ -36,7 +37,16 @@ class _AccountPage2State extends State<AccountPage2> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text('Личный кабинет: ${widget.account.id}'),
+        title: Text('ID: ${account?.id}'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ChatPage(id: account!.id)));
+              },
+              icon: const Icon(Icons.message)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
+        ],
       ),
       body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -49,19 +59,19 @@ class _AccountPage2State extends State<AccountPage2> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                Text('ФИО: ${account.name}'),
+                Text('ФИО: ${account?.name}'),
                 Text(
-                    'Адрес: ${account.street}, ${account.house}, ${account.flat}'),
+                    'Адрес: ${account?.street}, ${account?.house}, ${account?.flat}'),
                 const SizedBox(height: 32),
                 const Text(
                   'Информация о тарифе',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                Text('Абонентский счет: ${account.balance} руб.'),
-                Text('Текущий тариф: ${account.tarifName}'),
+                Text('Абонентский счет: ${account?.balance} руб.'),
+                Text('Текущий тариф: ${account?.tarifName}'),
                 Text(
-                    'Абонплата: ${account.tarifSum} руб. (${(account.tarifSum / 30).toStringAsFixed(2)} руб. в сутки)'),
+                    'Абонплата: ${account?.tarifSum} руб. (${(account!.tarifSum / 30).toStringAsFixed(2)} руб. в сутки)'),
                 if (account.daysRemain >= 0) ...[
                   Text(
                       'Дата окончания действия текущего пакета: ${account.endDate} (${account.daysRemain} дн.)')
@@ -131,7 +141,7 @@ class _AccountPage2State extends State<AccountPage2> {
                               if (tempAcc != null) {
                                 widget.update(tempAcc);
                                 setState(() {
-                                  widget.account = tempAcc;
+                                  accounts[widget.guid] = tempAcc;
                                 });
 
                                 saveAccountDataToLocalStorage(

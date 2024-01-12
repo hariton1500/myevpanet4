@@ -39,6 +39,8 @@ dependencies:
   flutter_local_notifications: ^16.3.0
   mask_text_input_formatter: ^2.7.0
   http: ^1.1.2
+  flutter_chat_ui: ^1.6.10
+  flutter_chat_types: ^3.6.2
 
 dev_dependencies:
   flutter_test:

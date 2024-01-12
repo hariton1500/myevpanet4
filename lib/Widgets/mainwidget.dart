@@ -2,7 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
-import 'package:myevpanet4/Pages/accountpage.dart';
+//import 'package:myevpanet4/Pages/accountpage.dart';
 import 'package:myevpanet4/Pages/accountpage2.dart';
 import 'package:myevpanet4/Pages/logs.dart';
 import 'package:myevpanet4/Pages/messagespage.dart';
@@ -31,7 +31,7 @@ class _MainWidgetState extends State<MainWidget> {
   Widget build(BuildContext context) {
     return accounts.entries.length == 1
         ? AccountPage2(
-            account: accounts.entries.first.value,
+            //account: accounts.entries.first.value,
             guid: accounts.entries.first.key,
             update: (acc) {},
           )
@@ -62,7 +62,7 @@ class _MainWidgetState extends State<MainWidget> {
                                 onTap: () => Navigator.of(context)
                                     .push(MaterialPageRoute(
                                         builder: (context) => AccountPage2(
-                                              account: e.value,
+                                              //account: e.value,
                                               guid: e.key,
                                               update: (acc) {
                                                 setState(() {
