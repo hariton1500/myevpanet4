@@ -42,7 +42,8 @@ class _AccountPage2State extends State<AccountPage2> {
           IconButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ChatPage(id: account!.id)));
+                    builder: (context) =>
+                        ChatPage(id: account!.id, guid: widget.guid)));
               },
               icon: const Icon(Icons.message)),
           IconButton(onPressed: () {}, icon: const Icon(Icons.call)),

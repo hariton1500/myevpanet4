@@ -159,3 +159,33 @@ Future<Map<String, dynamic>?> updateTarifWithConfirmation(
   });
   return result;
 }
+
+Future<String?> addSupportRequest(
+    {required String token,
+    required String guid,
+    required String message}) async {
+  try {
+    final response = await http.post(
+      Uri.parse('https://evpanet.com/api/apk/support/request'),
+      headers: {'token': token},
+      body: {'message': message, 'guid': guid},
+    );
+
+    print(jsonDecode(response.body));
+    print(response.statusCode);
+    print({'guid': guid, 'token': token});
+
+    if (response.statusCode >= 200 && response.statusCode < 210) {
+      var decoded = jsonDecode(response.body);
+      return decoded['message'].toString();
+    } else if (response.statusCode >= 400 && response.statusCode < 410) {
+      lastApiErrorMessage = jsonDecode(response.body)['message'];
+    } else {
+      throw Exception('Failed sendin message');
+    }
+    return null;
+  } catch (e) {
+    printLog('[sendingMessageAPI] $e');
+  }
+  return null;
+}

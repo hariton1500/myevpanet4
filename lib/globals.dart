@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:myevpanet4/Models/account.dart';
 
 int currentId = 0;
@@ -22,6 +23,14 @@ messages format:
   }
 ]
 */
+
+List<types.Message> messagesChat = messages
+    .map((e) => types.TextMessage(
+        author: types.User(id: e['author']),
+        id: (e['date'] as DateTime).millisecondsSinceEpoch.toString(),
+        text: e['text'],
+        createdAt: (e['date'] as DateTime).millisecondsSinceEpoch))
+    .toList();
 
 bool get isRegistered =>
     appState['guids'] is List && appState['guids'].length > 0;
