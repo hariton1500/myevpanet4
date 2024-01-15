@@ -39,94 +39,91 @@ class _AuthWidgetState extends State<AuthWidget> {
         title: Text('Авторизация',
             style: Theme.of(context).textTheme.headlineMedium),
       ),
+      bottomSheet: remark(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      controller: _idController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [_idNumberFormatter],
-                      decoration: const InputDecoration(
-                        labelText: 'Введите ваш ID',
-                        border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0))),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Пожалуйста, введите свой ID';
-                        }
-                        // Дополнительные проверки по вашим требованиям
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [_phoneNumberFormatter],
-                      decoration: const InputDecoration(
-                        labelText: 'Введите номер телефона',
-                        border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0))),
-                      ),
-                      validator: (value) {
-                        //print(value?.length);
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.length != 18) {
-                          return 'Пожалуйста, введите номер телефона полностью';
-                        }
-                        // Дополнительные проверки по вашим требованиям
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          // Все проверки пройдены, выполняем логику авторизации
-                          // authService.signIn(_idController.text, _phoneController.text);
-                          // Ваш код здесь
-                          authenticate(
-                                  token: appState['token'],
-                                  phoneNumber:
-                                      '+${_phoneNumberFormatter.getUnmaskedText()}',
-                                  uid: _idNumberFormatter.getUnmaskedText())
-                              .then((value) {
-                            if (value.isEmpty) {
-                              // Пользователь не найден
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(lastApiErrorMessage),
-                                ),
-                              );
-                            } else {
-                              // Пользователи найдены / сохраняем в локальном хранилище
-                              //print('guids: $value');
-                              saveAppState(guids: value);
-                              appState['guids'] = value;
-                              // Вызываем onSuccess, чтобы перейти к следующему экрану
-                              widget.onSuccess();
-                            }
-                          });
-                        }
-                      },
-                      child: const Text('Войти'),
-                    ),
-                  ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _idController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [_idNumberFormatter],
+                  decoration: const InputDecoration(
+                    labelText: 'Введите ваш ID',
+                    border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.all(Radius.circular(20.0))),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Пожалуйста, введите свой ID';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              Container(
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [_phoneNumberFormatter],
+                  decoration: const InputDecoration(
+                    labelText: 'Введите номер телефона',
+                    border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.all(Radius.circular(20.0))),
+                  ),
+                  validator: (value) {
+                    //print(value?.length);
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.length != 18) {
+                      return 'Пожалуйста, введите номер телефона полностью';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      authenticate(
+                              token: appState['token'],
+                              phoneNumber:
+                                  '+${_phoneNumberFormatter.getUnmaskedText()}',
+                              uid: _idNumberFormatter.getUnmaskedText())
+                          .then((value) {
+                        if (value.isEmpty) {
+                          // Пользователь не найден
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(lastApiErrorMessage),
+                            ),
+                          );
+                        } else {
+                          // Пользователи найдены / сохраняем в локальном хранилище
+                          saveAppState(guids: value);
+                          appState['guids'] = value;
+                          // Вызываем onSuccess, чтобы перейти к следующему экрану
+                          widget.onSuccess();
+                        }
+                      });
+                    }
+                  },
+                  child: const Text('Войти'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  Widget remark() {
+    return               Container(
                 padding: const EdgeInsets.all(16.0),
                 color: Colors.grey[200],
                 child: GestureDetector(
@@ -169,12 +166,7 @@ class _AuthWidgetState extends State<AuthWidget> {
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16.0),
-            ],
-          ),
-        ),
-      ),
-    );
+              );
+
   }
 }
