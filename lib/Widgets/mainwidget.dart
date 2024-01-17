@@ -7,7 +7,6 @@ import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
 //import 'package:myevpanet4/Pages/accountpage.dart';
 import 'package:myevpanet4/Pages/accountpage2.dart';
 import 'package:myevpanet4/Pages/logs.dart';
-import 'package:myevpanet4/Pages/messagespage.dart';
 import 'package:myevpanet4/globals.dart';
 
 class MainWidget extends StatefulWidget {
@@ -24,17 +23,19 @@ class _MainWidgetState extends State<MainWidget> {
     runAccountsLoading();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       printLog(
-          'onMessage: ${message.notification?.title}\n${message.notification?.body}}');
+          'onMessage: ${message.notification?.title}\n${message.notification?.body}');
       /*
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => MessagesPage(message: message)));*/
-      messages.add({
+      appState['messages'].add({
         'id': DateTime.now().millisecondsSinceEpoch,
         'date': DateTime.now().toString(),
         'text': message.notification!.body,
-        'direction': getIdFromMessageTitle(message.notification!.title!),
+        'direction':
+            getIdFromMessageTitle(message.notification!.title!).toString(),
         'author': 'EvpaNet'
       });
+      printLog('onMessage: ${messages.last}');
       showScaffoldMessage(
           message: message.notification!.body!, context: context);
     });

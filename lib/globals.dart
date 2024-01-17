@@ -24,12 +24,14 @@ messages format:
 ]
 */
 
-List<types.Message> messagesChat = messages
+List<types.Message> messagesChat(int filterId) => messages
+    .where((element) => element['direction'] == filterId.toString())
+    .toList()
     .map((e) => types.TextMessage(
         author: types.User(id: e['author']),
-        id: (e['date'] as DateTime).millisecondsSinceEpoch.toString(),
+        id: (DateTime.parse(e['date'])).millisecondsSinceEpoch.toString(),
         text: e['text'],
-        createdAt: (e['date'] as DateTime).millisecondsSinceEpoch))
+        createdAt: (DateTime.parse(e['date'])).millisecondsSinceEpoch))
     .toList();
 
 bool get isRegistered =>
