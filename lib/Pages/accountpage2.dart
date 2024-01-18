@@ -5,6 +5,7 @@ import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
 import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/Pages/chat.dart';
 import 'package:myevpanet4/globals.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AccountPage2 extends StatefulWidget {
   const AccountPage2(
@@ -33,7 +34,7 @@ class _AccountPage2State extends State<AccountPage2> {
     } catch (e) {
       printLog(e);
     }
-    print('filtered tarifs: $filteredTarifs');
+    //print('filtered tarifs: $filteredTarifs');
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
@@ -69,7 +70,19 @@ class _AccountPage2State extends State<AccountPage2> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                Text('Абонентский счет: ${account?.balance} руб.'),
+                Wrap(
+                  spacing: 10,
+                  children: [
+                    Text('Абонентский счет: ${account?.balance} руб.'),
+                    ElevatedButton.icon(
+                        onPressed: () {
+                          launchUrl(Uri.parse(
+                              'https://payberry.ru/pay/26?acc=${account?.id}'));
+                        },
+                        icon: const Icon(Icons.currency_ruble),
+                        label: const Text('Пополнить online')),
+                  ],
+                ),
                 Text('Текущий тариф: ${account?.tarifName}'),
                 Text(
                     'Абонплата: ${account?.tarifSum} руб. (${(account!.tarifSum / 30).toStringAsFixed(2)} руб. в сутки)'),
