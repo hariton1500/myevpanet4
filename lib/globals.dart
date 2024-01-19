@@ -8,7 +8,8 @@ Map<String, dynamic> appState = {
   'guids': <String>[],
   'accounts': <String, Account>{},
   'token': '',
-  'messages': <Map<String, dynamic>>[]
+  'messages': <Map<String, dynamic>>[],
+  'flagNewMessage': bool,
 };
 
 /*
@@ -46,6 +47,8 @@ String get token => appState['token'];
 List<Map<String, dynamic>> get messages => appState['messages'];
 
 int get id => currentId;
+
+bool get isNewMessage => appState['flagNewMessage'];
 
 String lastApiErrorMessage = '';
 

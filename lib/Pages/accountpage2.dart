@@ -192,7 +192,14 @@ class _AccountPage2State extends State<AccountPage2> {
                     var result = await changeActivationFlagAPI(
                         token: token, guid: widget.guid);
                     setState(() {
-                      if (result != null) account.auto = result;
+                      if (result != null) {
+                        account.auto = result;
+                      } else {
+                        showScaffoldMessage(
+                            message:
+                                'Произошла ошибка. Повторите попытку позже.',
+                            context: context);
+                      }
                     });
                   },
                 ),

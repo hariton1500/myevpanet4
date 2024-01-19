@@ -6,6 +6,7 @@ import 'package:myevpanet4/Helpers/messagesfuncs.dart';
 import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
 //import 'package:myevpanet4/Pages/accountpage.dart';
 import 'package:myevpanet4/Pages/accountpage2.dart';
+import 'package:myevpanet4/Pages/chat.dart';
 import 'package:myevpanet4/Pages/logs.dart';
 import 'package:myevpanet4/globals.dart';
 
@@ -21,20 +22,30 @@ class _MainWidgetState extends State<MainWidget> {
   void initState() {
     super.initState();
     runAccountsLoading();
+    //if flag new messages is true, then go to ChatPage
+    Future.delayed(const Duration(seconds: 3), () {
+      printLog('[MainWidget] isNewMessage: $isNewMessage');
+      if (isNewMessage) {
+        appState['flagNewMessage'] = false;
+        //go to ChatPage where id is last message direction
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ChatPage(
+                id: messages.last['direction'],
+                guid: accounts.keys.firstWhere(
+                    (element) =>
+                        accounts[element]?.id.toString() ==
+                        messages.last['direction'],
+                    orElse: () => guids.first))));
+      }
+    });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       printLog(
           'onMessage: ${message.notification?.title}\n${message.notification?.body}');
       /*
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => MessagesPage(message: message)));*/
-      appState['messages'].add({
-        'id': DateTime.now().millisecondsSinceEpoch,
-        'date': DateTime.now().toString(),
-        'text': message.notification!.body,
-        'direction':
-            getIdFromMessageTitle(message.notification!.title!).toString(),
-        'author': 'EvpaNet'
-      });
+      appState['messages'].add(convertFCMessageToMessage(message));
+      saveMessages();
       printLog('onMessage: ${messages.last}');
       showScaffoldMessage(
           message: message.notification!.body!, context: context);
@@ -47,7 +58,9 @@ class _MainWidgetState extends State<MainWidget> {
         ? AccountPage2(
             //account: accounts.entries.first.value,
             guid: accounts.entries.first.key,
-            update: (acc) {},
+            update: (acc) {
+              setState(() {});
+            },
           )
         : SafeArea(
             child: Scaffold(

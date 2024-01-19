@@ -5,12 +5,13 @@ import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/globals.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future loadAppState() async {
+Future<void> loadAppState() async {
   // load appState from local storage
   // appState = {'guids': [], 'accounts': {}, 'token': ''};
   await loadGuids();
   //await loadAccounts();
   await loadToken();
+  await loadFlags();
 }
 
 Future loadGuids() async {
@@ -34,7 +35,7 @@ Future loadToken() async {
     provisional: false,
     sound: true,
   );
-  print('User granted permission: ${settings.authorizationStatus}');
+  printLog('User granted permission: ${settings.authorizationStatus}');
 
   // check token from google
   //String tokenFromFCM = !kIsWeb? await FirebaseMessaging.instance.getToken() ?? '' : '';
@@ -55,9 +56,11 @@ Future loadToken() async {
 
 Future saveAppState(
     {List<String>? guids, MapEntry<String, Account>? accountEntry}) async {
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  // save flags to local storage
+  sharedPreferences.setBool('flag_new_message', false);
   // save appState to local storage
   if (guids != null) {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setStringList('guids', guids);
   }
   if (accountEntry != null) {
@@ -66,7 +69,6 @@ Future saveAppState(
     Account acc = accountEntry.value;
     printLog('Account data saved to local storage: $guid = ${acc.show()}');
     // save account to local storage
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setString(guid, acc.toJson());
   }
 }
@@ -100,4 +102,36 @@ Future<Account?> loadAccountDataFromLocalStorage({required String guid}) async {
   }
   printLog('loading failed. returning null');
   return null;
+}
+
+Future<void> saveMessages() async {
+  if (messages.isNotEmpty) {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setStringList(
+        'messages_storage', messages.map((e) => jsonEncode(e)).toList());
+  }
+}
+
+Future<void> loadMessages() async {
+  printLog('loading messages from local storage');
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  List<String> messagesJson =
+      sharedPreferences.getStringList('messages_storage') ?? [];
+  appState['messages'] = messagesJson.map((e) => jsonDecode(e)).toList();
+  printLog(
+      'messages loaded from local storage: ${appState['messages'].length}');
+}
+
+Future<void> saveFlags() async {
+  // save flag to show new message in chat page
+  printLog('saving flag to show new message in chat page');
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  sharedPreferences.setBool('flag_new_message', true);
+}
+
+Future<void> loadFlags() async {
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  appState['flagNewMessage'] =
+      sharedPreferences.getBool('flag_new_message') ?? false;
+  printLog('flag_new_message loaded from local storage: $isNewMessage');
 }
