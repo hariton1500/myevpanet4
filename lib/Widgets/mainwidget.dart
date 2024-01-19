@@ -22,6 +22,11 @@ class _MainWidgetState extends State<MainWidget> {
   void initState() {
     super.initState();
     runAccountsLoading();
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      printLog('A new onMessageOpenedApp event was published!');
+      printLog('Message data: ${message.data}');
+      printLog('Message notification: ${message.notification}');
+    });
     //if flag new messages is true, then go to ChatPage
     Future.delayed(const Duration(seconds: 3), () {
       printLog('[MainWidget] isNewMessage: $isNewMessage');
