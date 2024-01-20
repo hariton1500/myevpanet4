@@ -62,17 +62,4 @@ class _ChatPageState extends State<ChatPage> {
           l10n: const ChatL10nRu()),
     );
   }
-
-  void loadMessages() async {
-    List<types.Message> _messages = messages
-        .map((e) => types.TextMessage(
-            author: types.User(id: e['author']),
-            id: (e['date'] as DateTime).millisecondsSinceEpoch.toString(),
-            text: e['text'],
-            createdAt: (e['date'] as DateTime).millisecondsSinceEpoch))
-        .toList();
-    setState(() {
-      _messages;
-    });
-  }
 }

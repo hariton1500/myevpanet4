@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:myevpanet4/Dialogs/availabletarifsinfo.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
@@ -83,7 +86,16 @@ class _AccountPage2State extends State<AccountPage2> {
                         label: const Text('Пополнить online')),
                   ],
                 ),
-                Text('Текущий тариф: ${account?.tarifName}'),
+                Wrap(
+                  children: [
+                    Text('Текущий тариф: ${account?.tarifName}'),
+                    IconButton(
+                        onPressed: () {
+                          showAvailableTariffs(context, account!);
+                        },
+                        icon: const Icon(Icons.info))
+                  ],
+                ),
                 Text(
                     'Абонплата: ${account?.tarifSum} руб. (${(account!.tarifSum / 30).toStringAsFixed(2)} руб. в сутки)'),
                 if (account.daysRemain >= 0) ...[
@@ -145,7 +157,8 @@ class _AccountPage2State extends State<AccountPage2> {
                             //print('---------------\n$value\n===============');
                             var result = await updateTarifWithConfirmation(
                                 context, token, value!['id'], widget.guid);
-                            print('---------------\n$result\n===============');
+                            printLog(
+                                '---------------\n$result\n===============');
                             if (result != null) {
                               showScaffoldMessage(
                                   message: 'Тариф успешно изменен',

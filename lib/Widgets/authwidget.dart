@@ -55,8 +55,7 @@ class _AuthWidgetState extends State<AuthWidget> {
                   decoration: const InputDecoration(
                     labelText: 'Введите ваш ID',
                     border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.all(Radius.circular(20.0))),
+                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -73,14 +72,11 @@ class _AuthWidgetState extends State<AuthWidget> {
                   decoration: const InputDecoration(
                     labelText: 'Введите номер телефона',
                     border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.all(Radius.circular(20.0))),
+                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
                   ),
                   validator: (value) {
                     //print(value?.length);
-                    if (value == null ||
-                        value.isEmpty ||
-                        value.length != 18) {
+                    if (value == null || value.isEmpty || value.length != 18) {
                       return 'Пожалуйста, введите номер телефона полностью';
                     }
                     return null;
@@ -122,51 +118,53 @@ class _AuthWidgetState extends State<AuthWidget> {
       ),
     );
   }
-  Widget remark() {
-    return               Container(
-                padding: const EdgeInsets.all(16.0),
-                color: Colors.grey[200],
-                child: GestureDetector(
-                  onDoubleTap: () {
-                    magic++;
-                    if (magic >= 3) {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LogsPage())).then((value) {
-                        magic = 0;
-                      });
-                    }
-                  },
-                  child: RichText(
-                    text: const TextSpan(
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14.0,
-                      ),
-                      children: [
-                        TextSpan(text: 'Для авторизации введите '),
-                        TextSpan(
-                          text: 'ID и номер телефона.',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(text: '\n\n'),
-                        TextSpan(
-                          text: 'ID: ',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                            text:
-                                'Ваш абонентский идентификатор, он же номер договора, он же номер пополнения баланса\n'),
-                        TextSpan(
-                          text: 'Номер телефона: ',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: 'Который закреплен к вашему абонентскому счету.',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
 
+  Widget remark() {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      color: Colors.grey[200],
+      child: GestureDetector(
+        onDoubleTap: () {
+          magic++;
+          if (magic >= 3) {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => const LogsPage()))
+                .then((value) {
+              magic = 0;
+            });
+          }
+        },
+        child: RichText(
+          text: const TextSpan(
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14.0,
+            ),
+            children: [
+              TextSpan(text: 'Для авторизации введите '),
+              TextSpan(
+                text: 'ID и номер телефона.',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(text: '\n\n'),
+              TextSpan(
+                text: 'ID: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(
+                  text:
+                      'Ваш абонентский идентификатор, он же номер договора, он же номер пополнения баланса\n'),
+              TextSpan(
+                text: 'Номер телефона: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(
+                text: 'Который закреплен к вашему абонентскому счету.',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

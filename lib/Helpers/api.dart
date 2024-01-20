@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -79,9 +81,9 @@ Future<bool?> changeActivationFlagAPI(
         headers: {'token': token},
         body: {'guid': guid});
 
-    print(jsonDecode(response.body));
-    print(response.statusCode);
-    print({'guid': guid, 'token': token});
+    printLog(jsonDecode(response.body));
+    printLog(response.statusCode);
+    printLog({'guid': guid, 'token': token});
 
     if (response.statusCode >= 200 && response.statusCode < 210) {
       var decoded = jsonDecode(response.body);
@@ -105,10 +107,6 @@ Future<bool?> changeParentAccessFlagAPI(
         Uri.parse('https://evpanet.com/api/apk/user/parent_control/'),
         headers: {'token': token},
         body: {'guid': guid});
-
-    print(jsonDecode(response.body));
-    print(response.statusCode);
-    print({'guid': guid, 'token': token});
 
     if (response.statusCode >= 200 && response.statusCode < 210) {
       var decoded = jsonDecode(response.body);
@@ -140,9 +138,9 @@ Future<Map<String, dynamic>?> updateTarifWithConfirmation(
       );
 
       if (response.statusCode >= 200 && response.statusCode <= 210) {
-        print('resp.body = ${response.body}');
+        //print('resp.body = ${response.body}');
         Map<String, dynamic> decoded = json.decode(response.body);
-        print(decoded['message']['tarif_id']);
+        //print(decoded['message']['tarif_id']);
         Navigator.of(context)
             .pop(decoded['message']['tarif_id']); // Закрываем диалог
         result = decoded['message'];
@@ -170,10 +168,6 @@ Future<String?> addSupportRequest(
       headers: {'token': token},
       body: {'message': message, 'guid': guid},
     );
-
-    print(jsonDecode(response.body));
-    print(response.statusCode);
-    print({'guid': guid, 'token': token});
 
     if (response.statusCode >= 200 && response.statusCode < 210) {
       var decoded = jsonDecode(response.body);
