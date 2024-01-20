@@ -8,7 +8,7 @@ Map<String, dynamic> appState = {
   'guids': <String>[],
   'accounts': <String, Account>{},
   'token': '',
-  'messages': <Map<String, dynamic>>[],
+  'messages': <Map<String, dynamic>>[{}],
   'flagNewMessage': bool,
 };
 
@@ -44,7 +44,8 @@ List<String> get guids => List<String>.from(appState['guids']);
 
 String get token => appState['token'];
 
-List<Map<String, dynamic>> get messages => appState['messages'];
+List<Map<String, dynamic>> get messages =>
+    List<Map<String, dynamic>>.from(appState['messages']);
 
 int get id => currentId;
 

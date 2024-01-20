@@ -42,7 +42,7 @@ class _InitLoadingState extends State<InitLoading> {
     );
   }
 
-  void runInit() async {
+  void runInit() {
     loadAppState().then((value) {
       //print('init complete');
       Future.delayed(const Duration(seconds: 1), () {

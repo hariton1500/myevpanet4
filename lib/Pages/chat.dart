@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:myevpanet4/Helpers/api.dart';
+import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/globals.dart';
 
 class ChatPage extends StatefulWidget {
@@ -43,8 +44,8 @@ class _ChatPageState extends State<ChatPage> {
             if (result != null) {
               setState(() {
                 messagesChat(widget.id).insert(0, message);
-                (appState['messages'] as List<Map<String, dynamic>>)
-                    .add(storeMessage);
+                appState['messages'].add(storeMessage);
+                saveMessages();
               });
             } else {
               setState(() {

@@ -11,6 +11,7 @@ Future<void> loadAppState() async {
   await loadGuids();
   //await loadAccounts();
   await loadToken();
+  await loadMessages();
   await loadFlags();
 }
 
@@ -109,6 +110,7 @@ Future<void> saveMessages() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setStringList(
         'messages_storage', messages.map((e) => jsonEncode(e)).toList());
+    printLog('messages saved to local storage: ${messages.length}');
   }
 }
 
