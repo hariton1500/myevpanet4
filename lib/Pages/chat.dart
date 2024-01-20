@@ -39,7 +39,7 @@ class _ChatPageState extends State<ChatPage> {
               'date': DateTime.now().toString(),
               'text': text.text,
               'direction': widget.id.toString(),
-              'author': 'EvpaNet'
+              'author': widget.id.toString()
             };
             if (result != null) {
               setState(() {

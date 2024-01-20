@@ -120,8 +120,7 @@ Future<void> loadMessages() async {
   List<String> messagesJson =
       sharedPreferences.getStringList('messages_storage') ?? [];
   appState['messages'] = messagesJson.map((e) => jsonDecode(e)).toList();
-  printLog(
-      'messages loaded from local storage: ${appState['messages'].length}');
+  printLog('messages loaded from local storage: ${appState['messages']}');
 }
 
 Future<void> saveFlags() async {
