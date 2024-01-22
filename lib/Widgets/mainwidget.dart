@@ -1,11 +1,13 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:myevpanet4/Dialogs/calltosupport.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Helpers/messagesfuncs.dart';
 import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
 //import 'package:myevpanet4/Pages/accountpage.dart';
 import 'package:myevpanet4/Pages/accountpage2.dart';
+import 'package:myevpanet4/Pages/accountseditpaget.dart';
 import 'package:myevpanet4/Pages/chat.dart';
 import 'package:myevpanet4/Pages/logs.dart';
 import 'package:myevpanet4/globals.dart';
@@ -32,6 +34,7 @@ class _MainWidgetState extends State<MainWidget> {
       printLog('[MainWidget] isNewMessage: $isNewMessage');
       if (isNewMessage) {
         appState['flagNewMessage'] = false;
+        saveFlags();
         //go to ChatPage where id is last message direction
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => ChatPage(
@@ -70,6 +73,19 @@ class _MainWidgetState extends State<MainWidget> {
         : SafeArea(
             child: Scaffold(
             appBar: AppBar(
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      callToSupportDialog(context);
+                    },
+                    icon: const Icon(Icons.call)),
+                IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const AccountsSetupPage()));
+                    },
+                    icon: const Icon(Icons.person_add))
+              ],
               title: GestureDetector(
                   //secret section to make appbar double tapable for getting to logs page
                   onDoubleTap: () {

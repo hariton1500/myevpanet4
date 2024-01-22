@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:myevpanet4/Dialogs/availabletarifsinfo.dart';
+import 'package:myevpanet4/Dialogs/calltosupport.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
@@ -50,7 +51,11 @@ class _AccountPage2State extends State<AccountPage2> {
                         ChatPage(id: account!.id, guid: widget.guid)));
               },
               icon: const Icon(Icons.message)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
+          IconButton(
+              onPressed: () {
+                callToSupportDialog(context);
+              },
+              icon: const Icon(Icons.call)),
         ],
       ),
       body: Padding(

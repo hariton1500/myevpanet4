@@ -24,6 +24,13 @@ class Account {
   int dayPrice = 0;
   bool? isRealIp;
 
+  String get address {
+    if (street.isEmpty) return '';
+    return street +
+        (house.isEmpty ? '' : ', д. $house') +
+        (flat.isEmpty ? '' : ', кв. $flat');
+  }
+
   Account();
 
   Account.loadFromServerJson(Map<String, dynamic> user, String guid) {

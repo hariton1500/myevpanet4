@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Helpers/messagesfuncs.dart';
 import 'package:myevpanet4/Pages/initloading.dart';
@@ -13,18 +13,20 @@ import 'firebase_options.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await setupFlutterNotifications();
+  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //await setupFlutterNotifications();
   //showFlutterNotification(message);
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   printLog('Handling a background message ${message.messageId}');
-  await loadMessages();
-  messages.add(convertFCMessageToMessage(message));
-  saveMessages();
+  loadMessages().then((value) {
+    messages.add(convertFCMessageToMessage(message));
+    saveMessages();
+  });
   saveFlags();
 }
 
+/*
 /// Create a [AndroidNotificationChannel] for heads up notifications
 late AndroidNotificationChannel channel;
 
@@ -85,8 +87,10 @@ void showFlutterNotification(RemoteMessage message) {
   }
 }
 
+
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+*/
 
 //correct issue with https certicates expirations
 class MyHttpOverrides extends HttpOverrides {
@@ -107,9 +111,10 @@ Future<void> main() async {
   );
   HttpOverrides.global = MyHttpOverrides();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  /*
   if (!kIsWeb) {
     await setupFlutterNotifications();
-  }
+  }*/
   runApp(const MyApp());
 }
 

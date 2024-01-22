@@ -25,8 +25,10 @@ class _ChatPageState extends State<ChatPage> {
           messages: messagesChat(widget.id),
           onSendPressed: (text) async {
             printLog('send ${text.text}');
+            //sending API request to add support request
             var result = await addSupportRequest(
                 token: token, guid: widget.guid, message: text.text);
+            //forming Chat message
             var message = types.TextMessage(
                 author: types.User(
                   id: widget.id.toString(),
@@ -34,19 +36,22 @@ class _ChatPageState extends State<ChatPage> {
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
                 text: text.text,
                 createdAt: DateTime.now().millisecondsSinceEpoch);
+            //forming local storage message
             Map<String, dynamic> storeMessage = {
               'id': DateTime.now().millisecondsSinceEpoch,
               'date': DateTime.now().toString(),
               'text': text.text,
               'direction': widget.id.toString(),
-              'author': widget.id.toString()
+              'author': widget.id
+                  .toString() //field for selecting the side of message in chat
             };
             if (result != null) {
               setState(() {
                 messagesChat(widget.id).insert(0, message);
                 appState['messages'].add(storeMessage);
-                saveMessages();
               });
+              //save messages to local storage
+              saveMessages();
             } else {
               setState(() {
                 messagesChat(widget.id).insert(
