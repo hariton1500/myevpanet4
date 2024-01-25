@@ -13,7 +13,8 @@ import 'package:myevpanet4/Pages/logs.dart';
 import 'package:myevpanet4/globals.dart';
 
 class MainWidget extends StatefulWidget {
-  const MainWidget({super.key});
+  const MainWidget({super.key, required this.update});
+  final VoidCallback update;
 
   @override
   State<MainWidget> createState() => _MainWidgetState();
@@ -62,6 +63,19 @@ class _MainWidgetState extends State<MainWidget> {
 
   @override
   Widget build(BuildContext context) {
+    printLog(
+        'MainWidget build:\nguids:${guids.length}\naccounts:${accounts.length}');
+    if (guids.isEmpty) {
+      Future.delayed(const Duration(seconds: 1), () {
+        //Navigator.of(context).pop();
+        widget.update();
+      });
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return accounts.entries.length == 1
         ? AccountPage2(
             //account: accounts.entries.first.value,
@@ -82,7 +96,14 @@ class _MainWidgetState extends State<MainWidget> {
                 IconButton(
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const AccountsSetupPage()));
+                          builder: (context) => AccountsSetupPage(
+                                update: () async {
+                                  printLog('AccountsSetupPage: update');
+                                  printLog('accounts: $accounts');
+                                  await runAccountsLoading();
+                                  setState(() {});
+                                },
+                              )));
                     },
                     icon: const Icon(Icons.person_add))
               ],
@@ -154,6 +175,7 @@ class _MainWidgetState extends State<MainWidget> {
           saveAppState(accountEntry: MapEntry(guid, acc));
           setState(() {
             appState['accounts'][guid] = acc;
+            print(accounts);
           });
         }
       });

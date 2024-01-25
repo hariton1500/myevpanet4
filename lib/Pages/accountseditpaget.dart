@@ -1,34 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:myevpanet4/Dialogs/sureask.dart';
+import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/globals.dart';
 
 class AccountsSetupPage extends StatefulWidget {
-  const AccountsSetupPage({super.key});
+  const AccountsSetupPage({super.key, required this.update});
+  final VoidCallback update;
 
   @override
   State<AccountsSetupPage> createState() => _AccountsSetupPageState();
 }
 
 class _AccountsSetupPageState extends State<AccountsSetupPage> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   @override
   Widget build(BuildContext context) {
+    print(appState);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Список учетных записей'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.delete_sweep))
+          IconButton(
+              onPressed: () async {
+                if (await areUSure(context,
+                    'Вы уверены, что хотите удалить все учетные записи?')) {
+                  setState(() {
+                    appState['accounts'] = {};
+                    appState['guids'] = [];
+                    clearLocalStorage();
+                    widget.update();
+                    Navigator.of(context).pop();
+                    /*
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const MainPage()));*/
+                  });
+                }
+              },
+              icon: const Icon(Icons.delete_sweep))
         ],
       ),
       body: Center(
-        child: AnimatedList(
-          key: _listKey,
-          itemBuilder: (context, index, animation) {
-            return SizeTransition(
-              sizeFactor: animation,
-              child: _listItem(index),
-            );
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            return _listItem(index);
           },
-          initialItemCount: accounts.length,
+          itemCount: accounts.length,
         ),
       ),
     );
@@ -43,9 +58,11 @@ class _AccountsSetupPageState extends State<AccountsSetupPage> {
       subtitle: Text(accounts.values.toList()[index].address),
       trailing: IconButton(
         onPressed: () {
-          appState['accounts'].entries.toList().removeAt(index);
-          _listKey.currentState
-              ?.removeItem(index, (context, animation) => _listItem(index));
+          setState(() {
+            appState['accounts'].entries.toList().removeAt(index);
+            appState['guids'].removeAt(index);
+            widget.update();
+          });
         },
         icon: const Icon(Icons.delete),
       ),

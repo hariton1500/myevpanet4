@@ -15,6 +15,14 @@ Future<void> loadAppState() async {
   await loadFlags();
 }
 
+Future<void> clearLocalStorage() async {
+  // clear local storage
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  sharedPreferences.remove('guids');
+  sharedPreferences.remove('accounts');
+  sharedPreferences.remove('messages');
+}
+
 Future loadGuids() async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   appState['guids'] = sharedPreferences.getStringList('guids') ?? [];

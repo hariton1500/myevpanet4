@@ -38,7 +38,9 @@ List<types.Message> messagesChat(int filterId) => messages
 bool get isRegistered =>
     appState['guids'] is List && appState['guids'].length > 0;
 
-Map<String, Account> get accounts => appState['accounts'];
+//Map<String, Account> get accounts => (appState['accounts'] is Map<String, Account>) ? appState['accounts'] : {};
+Map<String, Account> get accounts =>
+    Map<String, Account>.from(appState['accounts']);
 
 List<String> get guids => List<String>.from(appState['guids']);
 

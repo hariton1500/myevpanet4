@@ -19,6 +19,10 @@ class _MainPageState extends State<MainPage> {
               setState(() {});
             },
           )
-        : const MainWidget();
+        : MainWidget(
+            update: () {
+              setState(() {});
+            },
+          );
   }
 }
