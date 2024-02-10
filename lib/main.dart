@@ -13,7 +13,7 @@ import 'firebase_options.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   //await setupFlutterNotifications();
   //showFlutterNotification(message);
   // If you're going to use other Firebase services in the background, such as Firestore,

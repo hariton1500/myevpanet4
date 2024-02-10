@@ -5,14 +5,19 @@ import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/globals.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> loadAppState() async {
+Future<bool> loadAppState() async {
+  bool needReRegister = false;
   // load appState from local storage
   // appState = {'guids': [], 'accounts': {}, 'token': ''};
   await loadGuids();
   //await loadAccounts();
-  await loadToken();
+  var answer = await loadToken();
+  if (answer) {
+    needReRegister = true;
+  }
   await loadMessages();
   await loadFlags();
+  return needReRegister;
 }
 
 Future<void> clearLocalStorage() async {
@@ -29,7 +34,7 @@ Future loadGuids() async {
   printLog('Guids loaded from local storage: ${guids.length}');
 }
 
-Future loadToken() async {
+Future<bool> loadToken() async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   appState['token'] = sharedPreferences.getString('token') ?? '';
   printLog('Token loaded from local storage: $token');
@@ -54,13 +59,17 @@ Future loadToken() async {
       '';
   if (tokenFromFCM != appState['token']) {
     //FCM gave a new token to this app copy
+
     //saving old token
     sharedPreferences.setString('oldtoken', appState['token']);
     printLog('New token from FCM: $tokenFromFCM');
     appState['token'] = tokenFromFCM;
     //saving new token
     sharedPreferences.setString('token', tokenFromFCM);
+    //need to make register to server again
+    return true;
   }
+  return false;
 }
 
 Future saveAppState(

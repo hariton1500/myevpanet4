@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Pages/mainpage.dart';
+import 'package:myevpanet4/globals.dart';
 
 class InitLoading extends StatefulWidget {
   const InitLoading({super.key});
@@ -44,6 +45,9 @@ class _InitLoadingState extends State<InitLoading> {
 
   void runInit() {
     loadAppState().then((value) {
+      if (value) {
+        appState['guids'] = []; //force reregister
+      }
       //print('init complete');
       Future.delayed(const Duration(seconds: 1), () {
         Navigator.pushReplacement(
