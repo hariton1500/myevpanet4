@@ -115,6 +115,11 @@ class Account {
     return [id, name, balance, ip];
   }
 
+  @override
+  String toString() {
+    return show().toString();
+  }
+
   Widget accountWidgetSmall(int index) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),

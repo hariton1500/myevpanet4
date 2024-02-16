@@ -33,6 +33,7 @@ class _AuthWidgetState extends State<AuthWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print((appState['accounts'] as Map).values.map((e) => e.id));
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -60,6 +61,12 @@ class _AuthWidgetState extends State<AuthWidget> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Пожалуйста, введите свой ID';
+                    }
+                    if ((appState['accounts'] as Map)
+                        .values
+                        .map((e) => e.id.toString())
+                        .contains(value)) {
+                      return 'Этот ID уже есть в списке учетных записей';
                     }
                     return null;
                   },

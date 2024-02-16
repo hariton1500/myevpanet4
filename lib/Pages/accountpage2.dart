@@ -8,6 +8,7 @@ import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
 import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/Pages/chat.dart';
+//import 'package:myevpanet4/Widgets/pays.dart';
 import 'package:myevpanet4/globals.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -91,6 +92,7 @@ class _AccountPage2State extends State<AccountPage2> {
                         label: const Text('Пополнить online')),
                   ],
                 ),
+                //payVariantsWidget(account!, context, widget.guid),
                 Wrap(
                   children: [
                     Text('Текущий тариф: ${account?.tarifName}'),
@@ -102,7 +104,7 @@ class _AccountPage2State extends State<AccountPage2> {
                   ],
                 ),
                 Text(
-                    'Абонплата: ${account?.tarifSum} руб. (${(account!.tarifSum / 30).toStringAsFixed(2)} руб. в сутки)'),
+                    'Абонплата: ${account!.tarifSum} руб. (${(account.tarifSum / 30).toStringAsFixed(2)} руб. в сутки)'),
                 if (account.daysRemain >= 0) ...[
                   Text(
                       'Дата окончания действия текущего пакета: ${account.endDate} (${account.daysRemain} дн.)')

@@ -16,54 +16,49 @@ class AccountsSetupPage extends StatefulWidget {
 class _AccountsSetupPageState extends State<AccountsSetupPage> {
   @override
   Widget build(BuildContext context) {
-    print(appState);
+    //print(appState);
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Список учетных записей'),
-          actions: [
-            IconButton(
-                onPressed: () async {
-                  if (await areUSure(context,
-                      'Вы уверены, что хотите удалить все учетные записи из списка?')) {
-                    setState(() {
-                      appState['accounts'] = {};
-                      appState['guids'] = [];
-                      clearLocalStorage();
-                      widget.update();
-                      Navigator.of(context).pop();
-                      /*
+      appBar: AppBar(
+        title: const Text('Список учетных записей'),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                if (await areUSure(context,
+                    'Вы уверены, что хотите удалить все учетные записи из списка?')) {
+                  setState(() {
+                    appState['accounts'] = {};
+                    appState['guids'] = [];
+                    clearLocalStorage();
+                    widget.update();
+                    Navigator.of(context).pop();
+                    /*
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (context) => const MainPage()));*/
-                    });
-                  }
-                },
-                icon: const Icon(Icons.delete_sweep))
-          ],
-        ),
-        body: Center(
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return _listItem(index);
+                  });
+                }
+              },
+              icon: const Icon(Icons.delete_sweep)),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AuthWidget(
+                        onSuccess: () {},
+                      )));
             },
-            itemCount: accounts.length,
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-        floatingActionButton: FloatingActionButton(
-          isExtended: true,
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => AuthWidget(
-                      onSuccess: () {},
-                    )));
+            icon: const Icon(Icons.add),
+          )
+        ],
+      ),
+      body: Center(
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            return _listItem(index);
           },
-          child: const Row(
-            children: [
-              Icon(Icons.add),
-              Text('Добавить учетную запись'),
-            ],
-          ),
-        ));
+          itemCount: accounts.length,
+        ),
+      ),
+      //floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
   }
 
   Widget _listItem(int index) {
@@ -83,6 +78,7 @@ class _AccountsSetupPageState extends State<AccountsSetupPage> {
               (appState['accounts'] as Map<String, Account>).removeWhere(
                   (guid, acc) => guid == accounts.keys.toList()[index]);
               appState['guids'].removeAt(index);
+              saveAppState(guids: guids);
               widget.update();
             });
           }
