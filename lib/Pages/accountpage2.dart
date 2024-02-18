@@ -163,7 +163,8 @@ class _AccountPage2State extends State<AccountPage2> {
                           }).toList(),
                           onChanged: (value) async {
                             //showConfirmationDialogChangeTariff(context, () {setState(() {account.tarifName = value?.values.first!;});});
-                            print('---------------\n$value\n===============');
+                            printLog(
+                                '---------------\n$value\n===============');
                             if (int.parse(value?['speed']) > 200000) {
                               addSupportRequest(
                                       token: token,

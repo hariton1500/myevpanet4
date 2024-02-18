@@ -57,16 +57,17 @@ Future<bool> loadToken() async {
           vapidKey:
               'BF9QLEnrCHTSZqCcDvSF8yC2R6QRBTRokoOWgCIENrEV5heqlZ7-7ypMsGfn9M1-ZjvWEKLBWV9DAGg9t6ZEW7Q') ??
       '';
+  printLog('Fresh Token from FCM: $tokenFromFCM');
   if (tokenFromFCM != appState['token']) {
-    //FCM gave a new token to this app copy
+    printLog('FCM gave a new token to this device app copy');
 
     //saving old token
     sharedPreferences.setString('oldtoken', appState['token']);
-    printLog('New token from FCM: $tokenFromFCM');
+    printLog('Replace token from FCM one');
     appState['token'] = tokenFromFCM;
     //saving new token
     sharedPreferences.setString('token', tokenFromFCM);
-    //need to make register to server again
+    printLog('need to make register to server again');
     return true;
   }
   return false;
@@ -111,15 +112,20 @@ Future<Account?> loadAccountDataFromLocalStorage({required String guid}) async {
     printLog('loading is empty. returning null');
     return null;
   }
-  var decodedJson = jsonDecode(accJsonString);
-  //print('Account data loaded from local storage: $decodedJson');
-  if (decodedJson is Map<String, dynamic>) {
-    Account acc = Account.fromJson(decodedJson);
-    printLog('Account data loaded from local storage: ${acc.show()}');
-    return acc;
+  try {
+    var decodedJson = jsonDecode(accJsonString);
+    //print('Account data loaded from local storage: $decodedJson');
+    if (decodedJson is Map<String, dynamic>) {
+      Account acc = Account.fromJson(decodedJson);
+      printLog('Account data loaded from local storage: ${acc.show()}');
+      return acc;
+    }
+    printLog('loading failed. returning null');
+    return null;
+  } catch (e) {
+    printLog(e);
+    return null;
   }
-  printLog('loading failed. returning null');
-  return null;
 }
 
 Future<void> saveMessages() async {

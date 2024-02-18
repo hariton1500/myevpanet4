@@ -12,6 +12,7 @@ Future<List<String>> authenticate(
     {required String token,
     required String phoneNumber,
     required String uid}) async {
+  printLog('trying to authenticate');
   try {
     var url = Uri.https('evpanet.com', '/api/apk/login/user');
     final response = await http.post(
@@ -20,7 +21,7 @@ Future<List<String>> authenticate(
       body: {'number': phoneNumber, 'uid': uid},
     );
 
-    printLog(jsonDecode(response.body));
+    //printLog(jsonDecode(response.body));
     printLog(response.statusCode);
     printLog({'number': phoneNumber, 'uid': uid, 'token': token});
 
@@ -186,8 +187,8 @@ Future<String?> addSupportRequest(
 
 Future<String?> postGetPaymentNo(
     {required String token, required String guid}) async {
-  print('[postGetPaymentNo]');
-  print({'token': token, 'guid': guid});
+  printLog('[postGetPaymentNo]');
+  printLog({'token': token, 'guid': guid});
   try {
     final response = await http.post(
       Uri.parse('https://evpanet.com/api/apk/payment'),
@@ -196,7 +197,7 @@ Future<String?> postGetPaymentNo(
     );
     if (response.statusCode >= 200 && response.statusCode < 210) {
       var decoded = jsonDecode(response.body);
-      print(decoded);
+      //print(decoded);
       return decoded['message']['payment_id'].toString();
     } else if (response.statusCode >= 400 && response.statusCode < 410) {
       lastApiErrorMessage = jsonDecode(response.body)['message'];

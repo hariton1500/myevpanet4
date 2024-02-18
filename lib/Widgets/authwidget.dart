@@ -33,7 +33,7 @@ class _AuthWidgetState extends State<AuthWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print((appState['accounts'] as Map).values.map((e) => e.id));
+    //print((appState['accounts'] as Map).values.map((e) => e.id));
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

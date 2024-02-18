@@ -153,7 +153,7 @@ class _MainWidgetState extends State<MainWidget> {
   Future<void> runAccountsLoading() async {
     int countL = 0, countR = 0;
     for (var guid in guids) {
-      // 1. Load Accounts data from local storage
+      printLog('1. Load Accounts data from local storage');
       await loadAccountDataFromLocalStorage(guid: guid).then((acc) {
         if (acc != null) {
           printLog('adding account ${acc.show()}');
@@ -161,7 +161,12 @@ class _MainWidgetState extends State<MainWidget> {
           setState(() {
             appState['accounts'][guid] = acc;
           });
+        } else {
+          printLog('Account data not found in local storage');
         }
+      }, onError: (e) {
+        printLog('Error while loading account data from local storage: $e');
+        return null;
       });
     }
     printLog('Accounts loaded from local storage: $countL');
@@ -175,7 +180,7 @@ class _MainWidgetState extends State<MainWidget> {
           saveAppState(accountEntry: MapEntry(guid, acc));
           setState(() {
             appState['accounts'][guid] = acc;
-            print(accounts);
+            //print(accounts);
           });
         }
       });
