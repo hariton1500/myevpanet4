@@ -288,6 +288,11 @@ class _AccountPage2State extends State<AccountPage2> {
                     setState(() {
                       if (result != null) {
                         account.parentControl = result;
+                      } else {
+                        showScaffoldMessage(
+                            message:
+                                'Произошла ошибка. Повторите попытку позже.',
+                            context: context);
                       }
                     });
                   },
