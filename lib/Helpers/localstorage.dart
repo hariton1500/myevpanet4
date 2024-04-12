@@ -1,5 +1,6 @@
 // functions to work with local storage
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:myevpanet4/Models/account.dart';
 import 'package:myevpanet4/globals.dart';
@@ -53,6 +54,27 @@ Future<bool> loadToken() async {
 
   // check token from google
   //String tokenFromFCM = !kIsWeb? await FirebaseMessaging.instance.getToken() ?? '' : '';
+  //await Future.delayed(const Duration(seconds: 1));
+  if (Platform.isMacOS) {
+    String? apnsToken = await messaging.getAPNSToken();
+    if (apnsToken == null) {
+      printLog('Unable to retrieve an APNS token for the current device.');
+      await Future<void>.delayed(
+        const Duration(
+          seconds: 3,
+        ),
+      );
+      apnsToken = await messaging.getAPNSToken();
+      if (apnsToken == null) {
+        printLog('Unable to retrieve an APNS token for the current device.');
+        //return false;
+      } else {
+        printLog('APNS token: $apnsToken');
+      }
+    } else {
+      printLog('APNS token: $apnsToken');
+    }
+  }
   String tokenFromFCM = await FirebaseMessaging.instance.getToken(
           vapidKey:
               'BF9QLEnrCHTSZqCcDvSF8yC2R6QRBTRokoOWgCIENrEV5heqlZ7-7ypMsGfn9M1-ZjvWEKLBWV9DAGg9t6ZEW7Q') ??
