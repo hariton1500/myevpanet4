@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<bool> loadAppState() async {
   bool needReRegister = false;
+  await loadLogs();
   // load appState from local storage
   // appState = {'guids': [], 'accounts': {}, 'token': ''};
   await loadGuids();
@@ -180,4 +181,16 @@ Future<void> loadFlags() async {
   appState['flagNewMessage'] =
       sharedPreferences.getBool('flag_new_message') ?? false;
   printLog('flag_new_message loaded from local storage: $isNewMessage');
+}
+
+Future<void> saveLogs() async {
+  printLog('saving logs to device local storage');
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  sharedPreferences.setStringList('logs', logs);
+}
+
+Future<void> loadLogs() async {
+  printLog('loading logs from device local storage');
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  logs = sharedPreferences.getStringList('logs') ?? [];
 }

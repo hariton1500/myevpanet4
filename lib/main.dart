@@ -18,12 +18,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   //showFlutterNotification(message);
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
+  loadLogs();
   printLog('Handling a background message ${message.messageId}');
   loadMessages().then((value) {
     messages.add(convertFCMessageToMessage(message));
     saveMessages();
   });
   saveFlags();
+  saveLogs();
 }
 
 /*
