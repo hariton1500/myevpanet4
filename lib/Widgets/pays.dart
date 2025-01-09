@@ -1,6 +1,7 @@
 ///
 ///'https://paymaster.ru/payment/init?LMI_MERCHANT_ID=95005d6e-a21d-492a-a4c5-c39773020dd3&LMI_PAYMENT_AMOUNT=$value&LMI_CURRENCY=RUB&LMI_PAYMENT_NO=${abonent.lastApiMessage}&LMI_PAYMENT_DESC=%D0%9F%D0%BE%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5%20EvpaNet%20ID%20${abonent.users[currentUserIndex].id}'
 ///
+library;
 
 import 'package:flutter/material.dart';
 import 'package:myevpanet4/Dialogs/paymentsumm.dart';

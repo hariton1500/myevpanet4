@@ -184,13 +184,20 @@ Future<void> loadFlags() async {
 }
 
 Future<void> saveLogs() async {
-  printLog('saving logs to device local storage');
+  //printLog('saving logs to device local storage');
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  //sharedPreferences.setStringList('logs', []);
   sharedPreferences.setStringList('logs', logs);
 }
 
 Future<void> loadLogs() async {
-  printLog('loading logs from device local storage');
+  //printLog('loading logs from device local storage');
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   logs = sharedPreferences.getStringList('logs') ?? [];
+}
+
+Future<void> clearLogs() async {
+  //printLog('clearing logs from device local storage');
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  sharedPreferences.setStringList('logs', []);
 }
