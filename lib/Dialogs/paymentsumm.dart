@@ -6,10 +6,18 @@ Future<int?> askSumm(BuildContext context) {
       builder: (BuildContext context) {
         int summa = 0;
         return SimpleDialog(
+          contentPadding: const EdgeInsets.all(15),
           title: const Text('Введите сумму'),
           children: [
             TextFormField(
-              onChanged: (value) => summa = int.parse(value),
+              initialValue: summa.toString(),
+              onChanged: (value) {
+                try {
+                  summa = int.parse(value);
+                } catch (e) {
+                  summa = 0;
+                }
+              },
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'Сумма',

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:myevpanet4/Dialogs/availabletarifsinfo.dart';
 import 'package:myevpanet4/Dialogs/calltosupport.dart';
 import 'package:myevpanet4/Dialogs/info_with_ok.dart';
+import 'package:myevpanet4/Dialogs/paymentsumm.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
@@ -85,13 +86,27 @@ class _AccountPage2State extends State<AccountPage2> {
                   spacing: 10,
                   children: [
                     Text('Абонентский счет: ${account?.balance} руб.'),
+                  ]),
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                    ElevatedButton.icon(
+                        onPressed: () async{
+                          int? sum = await askSumm(context);
+                          if (sum != null && sum > 0) {
+                            launchUrl(Uri.parse(
+                              'https://billing.evpanet.com/api/robo/?id=${account?.id}&sum=$sum'));
+                          }
+                        },
+                        icon: const Icon(Icons.currency_ruble),
+                        label: const Text('Пополнить online Robokassa')),
                     ElevatedButton.icon(
                         onPressed: () {
                           launchUrl(Uri.parse(
                               'https://payberry.ru/pay/26?acc=${account?.id}'));
                         },
                         icon: const Icon(Icons.currency_ruble),
-                        label: const Text('Пополнить online')),
+                        label: const Text('Пополнить online Payberry')),
                   ],
                 ),
                 //payVariantsWidget(account!, context, widget.guid),
