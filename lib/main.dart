@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -9,6 +10,7 @@ import 'package:myevpanet4/Helpers/messagesfuncs.dart';
 import 'package:myevpanet4/Pages/initloading.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:myevpanet4/globals.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 @pragma('vm:entry-point')
@@ -18,16 +20,21 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   //showFlutterNotification(message);
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  //printLog('Handling a background message ${message.messageId}');
-
-  //need to save logs of incoming background message
-  await loadLogs();
-  logs.add(message.notification.toString());
-
-  loadMessages().then((value) {
-    messages.add(convertFCMessageToMessage(message));
-    saveMessages();
-  });
+  //loadLogs();
+  printLog('[${DateTime.now()}]Handling a background message \nType:${message.messageType}\nData:${message.data}\nNotif.title:${message.notification?.title}\nNotif.body:${message.notification?.body}');
+  //await loadMessages();
+  printLog('loading messages from local storage');
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  List<String> messagesJson =
+      sharedPreferences.getStringList('messages_storage') ?? [];
+  appState['messages'] = messagesJson.map((e) => jsonDecode(e)).toList();
+  printLog('messages loaded from local storage: ${appState['messages']}');
+  var decodedMessage = convertFCMessageToMessage(message);
+  printLog('decodedMessage: $decodedMessage');
+  appState['messages'].add(decodedMessage);
+  //saveMessages();
+  sharedPreferences.setStringList(
+        'messages_storage', messages.map((e) => jsonEncode(e)).toList());
   saveFlags();
   saveLogs();
 }

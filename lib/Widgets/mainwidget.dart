@@ -31,33 +31,32 @@ class _MainWidgetState extends State<MainWidget> {
       printLog('Message notification: ${message.notification}');
     });
     //if flag new messages is true, then go to ChatPage
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () async {
       printLog('[MainWidget] isNewMessage: $isNewMessage');
       if (isNewMessage) {
         appState['flagNewMessage'] = false;
         saveFlags();
+        await loadMessages();
         //go to ChatPage where id is last message direction
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ChatPage(
-                id: messages.last['direction'],
-                guid: accounts.keys.firstWhere(
-                    (element) =>
-                        accounts[element]?.id.toString() ==
-                        messages.last['direction'],
-                    orElse: () => guids.first))));
+        print(messages.last);
+        int tmpId = int.parse(messages.last['direction']);
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatPage(id: tmpId, guid: accounts.keys.firstWhere((s) => accounts[s]?.id == tmpId))));
       }
     });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       printLog(
-          'onMessage: ${message.notification?.title}\n${message.notification?.body}');
+          'onMessage:');
+      printLog('Title:\n${message.notification?.title}\nBody:\n${message.notification?.body}');
       /*
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => MessagesPage(message: message)));*/
       appState['messages'].add(convertFCMessageToMessage(message));
       saveMessages();
-      printLog('onMessage: ${messages.last}');
+      //printLog('onMessage: ${messages.last}');
       showScaffoldMessage(
           message: message.notification!.body!, context: context);
+      int tmpId = getIdFromMessageTitle(message.notification!.title!);
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatPage(id: tmpId, guid: accounts.keys.firstWhere((s) => accounts[s]?.id == tmpId))));
     });
   }
 

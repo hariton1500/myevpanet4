@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/globals.dart';
 
 class LogsPage extends StatefulWidget {
@@ -23,7 +24,13 @@ class _LogsPageState extends State<LogsPage> {
                   logs.reversed;
                 });
               },
-              icon: const Icon(Icons.sort))
+              icon: const Icon(Icons.sort)),
+          IconButton(
+              onPressed: () {
+                clearLogs();
+                setState(() {logs = [];});
+              },
+              icon: const Icon(Icons.delete_forever))
         ],
       ),
       body: SingleChildScrollView(

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Models/account.dart';
 
 int currentId = 0;
@@ -60,8 +61,10 @@ int magic = 0;
 List<String> logs = [];
 printLog(Object o) {
   if (kDebugMode) {
+    print('===${DateTime.now()}=========================');
     print(o);
   }
-  logs.add(o.toString());
+  logs.add('===${DateTime.now().toLocal()}=========================\n$o');
+  saveLogs();
 }
 ////////////////

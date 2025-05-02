@@ -4,15 +4,15 @@ int getIdFromMessageTitle(String title) {
   int start = title.indexOf('(');
   int end = title.indexOf(')');
   String id = title.substring(start + 1, end);
-  return int.parse(id);
+  return int.tryParse(id) ?? 0;
 }
 
-convertFCMessageToMessage(RemoteMessage message) {
+Map<String, dynamic> convertFCMessageToMessage(RemoteMessage message) {
   return {
     'id': DateTime.now().millisecondsSinceEpoch,
     'date': DateTime.now().toString(),
-    'text': message.notification!.body,
-    'direction': getIdFromMessageTitle(message.notification!.title!).toString(),
+    'text': message.notification?.body ?? '',
+    'direction': getIdFromMessageTitle(message.notification?.title ?? '').toString(),
     'author': 'EvpaNet'
   };
 }
