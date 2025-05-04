@@ -32,6 +32,7 @@ class AccountPage2 extends StatefulWidget {
 class _AccountPage2State extends State<AccountPage2> {
   @override
   Widget build(BuildContext context) {
+    print('AccountPage2 build');
     var account = accounts[widget.guid];
     List? filteredTarifs;
     try {

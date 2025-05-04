@@ -6,7 +6,8 @@ import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Helpers/messagesfuncs.dart';
 import 'package:myevpanet4/Helpers/showscaffoldmessage.dart';
 //import 'package:myevpanet4/Pages/accountpage.dart';
-import 'package:myevpanet4/Pages/accountpage2.dart';
+//import 'package:myevpanet4/Pages/accountpage2.dart';
+import 'package:myevpanet4/Pages/accountpage3.dart';
 import 'package:myevpanet4/Pages/accountseditpaget.dart';
 import 'package:myevpanet4/Pages/chat.dart';
 import 'package:myevpanet4/Pages/logs.dart';
@@ -76,7 +77,7 @@ class _MainWidgetState extends State<MainWidget> {
       );
     }
     return accounts.entries.length == 1
-        ? AccountPage2(
+        ? AccountPage3(
             //account: accounts.entries.first.value,
             guid: accounts.entries.first.key,
             update: (acc) {
@@ -129,7 +130,7 @@ class _MainWidgetState extends State<MainWidget> {
                           .map((e) => GestureDetector(
                                 onTap: () => Navigator.of(context)
                                     .push(MaterialPageRoute(
-                                        builder: (context) => AccountPage2(
+                                        builder: (context) => AccountPage3(
                                               //account: e.value,
                                               guid: e.key,
                                               update: (acc) {

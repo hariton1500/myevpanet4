@@ -2,9 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types show TextMessage, User;
+import 'package:myevpanet4/Dialogs/availabletarifsinfo.dart';
+import 'package:myevpanet4/Dialogs/info_with_ok.dart' show infoWithOk;
+import 'package:myevpanet4/Dialogs/paymentsumm.dart';
 import 'package:myevpanet4/Helpers/api.dart';
 import 'package:myevpanet4/Helpers/localstorage.dart';
+import 'package:myevpanet4/Helpers/showscaffoldmessage.dart' show showScaffoldMessage;
 import 'package:myevpanet4/globals.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Account {
   String? guid;
@@ -257,6 +263,331 @@ class Account {
           color: daysRemain > 0 ? Colors.green : Colors.red,
           border: Border.all(color: Colors.black, width: 1.0)),
       child: Text(daysRemain > 0 ? ' Активно ' : ' Не активно '),
+    );
+  }
+
+  Widget connectionStatusWidget2(BuildContext context) {
+    return Row(
+      children: [
+        const Text('Статус:'),
+        const SizedBox(width: 8),
+        Text(daysRemain > 0 ? ' Активно ' : ' Не активно ', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: (daysRemain > 0 ? Colors.green : Colors.red), fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  // Account Information Card Widget
+  Widget accountInfoCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.person),
+                const SizedBox(width: 8),
+                Text(
+                  'Информация',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text('ФИО: $name'),
+            Text('Адрес: $street, $house, $flat'),
+            connectionStatusWidget2(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Tariff Information Card Widget
+  Widget tariffInfoCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.local_offer),
+                const SizedBox(width: 8),
+                Text(
+                  'Текущий тариф',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text('Наименование тарифа: $tarifName'),
+            Text('Стоимость тарифа: $tarifSum руб.'),
+            Text(
+                'Баланс: $balance руб.',
+              style: TextStyle(
+                color: balance < 0 ? Colors.red : null, fontWeight: FontWeight.bold
+              ),
+            ),
+            if (debt > 0) Text('Задолженность: $debt руб.', style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            if (daysRemain >= 0)
+              Text(
+                'Действует до: $endDate ($daysRemain дней)',
+                style: TextStyle(
+                  color: daysRemain < 7 ? Colors.red : null,
+                ),
+              ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                showAvailableTariffs(context, this);
+              },
+              child: const Text('Доступные тарифы'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Payments History Card Widget
+  Widget paymentsAndHistoryCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.payment),
+                const SizedBox(width: 8),
+                Text(
+                  'Оплата',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () async {
+                int? sum = await askSumm(context);
+                if (sum != null && sum > 0) {
+                  launchUrl(Uri.parse(
+                      'https://billing.evpanet.com/api/robo/?id=$id&sum=$sum'));
+                }
+              },
+              icon: const Icon(Icons.currency_ruble),
+              label: const Text('Пополнить online Robokassa'),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: () {
+                launchUrl(Uri.parse(
+                    'https://payberry.ru/pay/26?acc=$id'));
+              },
+              icon: const Icon(Icons.currency_ruble),
+              label: const Text('Пополнить online Payberry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Settings Section Widget
+  Widget settingsSection(BuildContext context, void Function(void Function()) update, List<dynamic>? filteredTarifs, String guid, void Function(Account) widgetUpdate) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.settings),
+                const SizedBox(width: 8),
+                Text(
+                  'Настройки',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (!auto)
+              ListTile(
+                title: const Text('Выбор тарифа:'),
+                trailing: DropdownButton<Map<String, dynamic>>(
+                  value: filteredTarifs?.firstWhere(
+                      (element) =>
+                          element['sum'].toString() ==
+                          tarifSum.toString(),
+                      orElse: () => null),
+                  disabledHint: const Text('Недостаточно средств'),
+                  hint: const Text('Выберите тариф'),
+                  items: filteredTarifs?.map((tariff) {
+                    return DropdownMenuItem<Map<String, dynamic>>(
+                      value: tariff,
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(tariff['name']),
+                          Text(
+                            'Стоимость: ${tariff['sum']} руб.',
+                            style: const TextStyle(
+                                fontSize: 10,
+                                fontStyle: FontStyle.italic),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) async {
+                    if (int.parse(value?['speed']) > 200000) {
+                      addSupportRequest(
+                              token: token,
+                              guid: guid,
+                              message:
+                                  'Пожелание абонента перейти на пакет более 100 Мбит, отправленное из приложения')
+                          .then((value) {
+                        Map<String, dynamic> storeMessage = {
+                          'id': DateTime.now()
+                              .millisecondsSinceEpoch,
+                          'date': DateTime.now().toString(),
+                          'text':
+                              'Пожелание абонента перейти на пакет более 100 Мбит',
+                          'direction': id.toString(),
+                          'author': id
+                              .toString() //field for selecting the side of message in chat
+                        };
+                        var chatMessage = types.TextMessage(
+                            author: types.User(
+                              id: id.toString(),
+                            ),
+                            id: DateTime.now()
+                                .millisecondsSinceEpoch
+                                .toString(),
+                            text:
+                                'Хочу перейти на пакет более 100 Мбит',
+                            createdAt: DateTime.now()
+                                .millisecondsSinceEpoch);
+
+                        if (value != null) {
+                          update(() {
+                            messagesChat(id)
+                                .insert(0, chatMessage);
+                            appState['messages'].add(storeMessage);
+                          });
+                          //save messages to local storage
+                          saveMessages();
+                        } else {
+                          update(() {
+                            messagesChat(id).insert(
+                                0,
+                                chatMessage.copyWith(
+                                    text:
+                                        'Сообщение c пожеланием перейти на тариф более 100 Мбит не доставлено. Повторите попытку позже'));
+                          });
+                        }
+                      });
+                      infoWithOk(
+                          context,
+                          const Text(
+                              'Самостоятельно изменить тариф более 100 Мбит нельзя, поскольку, возможно, ваше оборудование не поддерживает эту скорость, а также, возможно, требуется внести изменения в ваше подключение с нашей стороны. Поэтому будет произведена проверка и с Вами свяжется оператор службы поддержки. Спасибо за обращение!'));
+                    } else {
+                      var result =
+                          await updateTarifWithConfirmation(
+                              context,
+                              token,
+                              value!['id'],
+                              guid);
+                      printLog(
+                          '---------------$result===============');
+                      if (result != null) {
+                        showScaffoldMessage(
+                            message: 'Тариф изменен!',
+                            context: context);
+                        Account? tempAcc =
+                            await getAccountDataFromAPI(
+                                token: token, guid: guid);
+                        if (tempAcc != null) {
+                          widgetUpdate(tempAcc);
+                          update(() {
+                            appState['accounts'][guid] =
+                                tempAcc;
+                          });
+
+                          saveAccountDataToLocalStorage(
+                              acc: this, guid: guid);
+                        }
+                      } else {
+                        showScaffoldMessage(
+                            message: 'Произошла ошибка!',
+                            context: context);
+                      }
+                    }
+                  },
+                ),
+              )
+            else
+              ListTile(
+                  title: RichText(
+                text: const TextSpan(
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14.0,
+                  ),
+                  children: [
+                    TextSpan(
+                      text:
+                          'Чтобы изменить тариф, надо выключить автопродление',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              )),
+            SwitchListTile(
+              title: const Text('Автопродление'),
+              value: auto,
+              onChanged: (value) async {
+                var result = await changeActivationFlagAPI(
+                    token: token, guid: guid);
+                update(() {
+                  if (result != null) {
+                    auto = result;
+                  } else {
+                    showScaffoldMessage(
+                        message:
+                            'Произошла ошибка. Попробуйте позже.',
+                        context: context);
+                  }
+                });
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Родительский контроль'),
+              value: parentControl,
+              onChanged: (value) async {
+                var result = await changeParentAccessFlagAPI(
+                    token: token, guid: guid);
+                update(() {
+                  if (result != null) {
+                    parentControl = result;
+                  } else {
+                    showScaffoldMessage(
+                        message:
+                            'Произошла ошибка. Попробуйте позже.',
+                        context: context);
+                  }
+                });
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
