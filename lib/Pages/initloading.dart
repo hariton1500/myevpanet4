@@ -12,15 +12,25 @@ class InitLoading extends StatefulWidget {
 
 class _InitLoadingState extends State<InitLoading> {
   double opacityLevel = 0.0;
+  bool needReRegister = false;
 
   void _changeOpacity() {
     setState(() => opacityLevel = opacityLevel == 0 ? 1.0 : 0.0);
+  }
+  void _loadAppState() async {
+    needReRegister = await loadAppState();
+    if (needReRegister) {
+      appState['guids'] = [];
+    }
   }
 
   @override
   void initState() {
     super.initState();
     //runInit();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _loadAppState();
+    });
     Future.delayed(const Duration(seconds: 1), _changeOpacity);
   }
 
@@ -33,7 +43,10 @@ class _InitLoadingState extends State<InitLoading> {
           opacity: opacityLevel,
           curve: Curves.decelerate,
           duration: const Duration(seconds: 2),
-          onEnd: () => runInit(),
+          onEnd: () => Future.delayed(const Duration(seconds: 1), () {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => const MainPage()));
+          }),
           child: Text(
             'EvpaNet',
             style: Theme.of(context).textTheme.displayLarge,
@@ -41,18 +54,5 @@ class _InitLoadingState extends State<InitLoading> {
         ),
       ),
     );
-  }
-
-  void runInit() {
-    loadAppState().then((value) {
-      if (value) {
-        appState['guids'] = []; //force reregister
-      }
-      //print('init complete');
-      Future.delayed(const Duration(seconds: 1), () {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const MainPage()));
-      });
-    });
   }
 }

@@ -64,7 +64,7 @@ class _MainWidgetState extends State<MainWidget> {
   @override
   Widget build(BuildContext context) {
     printLog(
-        'MainWidget build:\nguids:${guids.length}\naccounts:${accounts.length}');
+        'MainWidget build:\nguids: ${guids.length}\naccounts loaded: ${accounts.length}');
     if (guids.isEmpty) {
       Future.delayed(const Duration(seconds: 1), () {
         //Navigator.of(context).pop();
@@ -182,7 +182,12 @@ class _MainWidgetState extends State<MainWidget> {
             appState['accounts'][guid] = acc;
             //print(accounts);
           });
+        } else {
+          printLog(lastApiErrorMessage);
         }
+      }, onError: (e) {
+        printLog('Error while loading account data from API: $e');
+        return null;
       });
     }
     printLog('Accounts loaded from API: $countR');

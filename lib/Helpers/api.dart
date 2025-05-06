@@ -60,6 +60,7 @@ Future<Account?> getAccountDataFromAPI(
     if (response.statusCode >= 200 && response.statusCode < 210) {
       // Парсим ответ и возвращаем данные об абоненте
       var decoded = jsonDecode(response.body);
+      lastApiErrorMessage = '';
       return Account.loadFromServerJson(
           (decoded['message']['userinfo'] as Map<String, dynamic>), guid);
     } else if (response.statusCode >= 400 && response.statusCode < 410) {
