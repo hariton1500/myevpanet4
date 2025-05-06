@@ -57,6 +57,7 @@ class _AccountsSetupPageState extends State<AccountsSetupPage> {
           itemCount: accounts.length,
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(onPressed: () {}, label: const Text('Добавить учетные записи с другим номером'), icon: const Icon(Icons.add),),
       //floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
