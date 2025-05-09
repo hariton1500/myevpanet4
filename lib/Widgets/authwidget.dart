@@ -24,6 +24,8 @@ class _AuthWidgetState extends State<AuthWidget> {
   final MaskTextInputFormatter _idNumberFormatter =
       MaskTextInputFormatter(mask: '######', filter: {"#": RegExp(r'[0-9]')});
 
+  bool _isLoading = false;
+
   @override
   void dispose() {
     _idController.dispose();
@@ -91,7 +93,10 @@ class _AuthWidgetState extends State<AuthWidget> {
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: _isLoading ? null : () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
                     if (_formKey.currentState?.validate() ?? false) {
                       authenticate(
                               token: appState['token'],
@@ -106,17 +111,23 @@ class _AuthWidgetState extends State<AuthWidget> {
                               content: Text(lastApiErrorMessage),
                             ),
                           );
+                          setState(() {
+                            _isLoading = false;
+                          });
                         } else {
+                          //добавляем к текущему списку guids и убираем дубликаты
+
+                          //guids = [...guids, ...value];
+                          appState['guids'] = <String>{...guids, ...value}.toList();
                           // Пользователи найдены / сохраняем в локальном хранилище
-                          saveAppState(guids: value);
-                          appState['guids'] = value;
+                          saveAppState(guids: guids);
                           // Вызываем onSuccess, чтобы перейти к следующему экрану
                           widget.onSuccess();
                         }
                       });
                     }
                   },
-                  child: const Text('Войти'),
+                  child: _isLoading ? const CircularProgressIndicator.adaptive() : const Text('Пройти авторизацию'),
                 ),
               ],
             ),

@@ -19,7 +19,7 @@ class _AccountsSetupPageState extends State<AccountsSetupPage> {
     //print(appState);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Список учетных записей'),
+        title: Text('Список учетных записей', style: Theme.of(context).textTheme.titleLarge,),
         actions: [
           IconButton(
               onPressed: () async {
@@ -38,15 +38,6 @@ class _AccountsSetupPageState extends State<AccountsSetupPage> {
                 }
               },
               icon: const Icon(Icons.delete_sweep)),
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => AuthWidget(
-                        onSuccess: () {},
-                      )));
-            },
-            icon: const Icon(Icons.add),
-          )
         ],
       ),
       body: Center(
@@ -57,7 +48,15 @@ class _AccountsSetupPageState extends State<AccountsSetupPage> {
           itemCount: accounts.length,
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(onPressed: () {}, label: const Text('Добавить учетные записи с другим номером'), icon: const Icon(Icons.add),),
+      floatingActionButton: FloatingActionButton.extended(onPressed: () {Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AuthWidget(
+                        onSuccess: () {
+                          widget.update();
+                          setState(() {
+                            Navigator.of(context).pop();
+                          });
+                        },
+                      )));}, label: const Text('Добавить учетные записи с другим номером'), icon: const Icon(Icons.add),),
       //floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
@@ -74,11 +73,13 @@ class _AccountsSetupPageState extends State<AccountsSetupPage> {
           if (await areUSure(context,
               'Вы уверены, что хотите удалить учетную запись ID: ${accounts.values.toList()[index].id} из списка?')) {
             setState(() {
-              Navigator.of(context).pop();
-              //appState['accounts'].entries.toList().removeAt(index);
-              (appState['accounts'] as Map<String, Account>).removeWhere(
-                  (guid, acc) => guid == accounts.keys.toList()[index]);
-              appState['guids'].removeAt(index);
+              //Navigator.of(context).pop();
+              String guidToRemove = accounts.keys.toList()[index];
+              //accounts.remove(accounts.keys.toList()[index]);
+              //appState['accounts'] = accounts;
+              (appState['accounts'] as Map<String, Account>).remove(guidToRemove);
+              //guids.remove(accounts.keys.toList()[index]);
+              appState['guids'].remove(guidToRemove);
               saveAppState(guids: guids);
               widget.update();
             });
