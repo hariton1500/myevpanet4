@@ -22,6 +22,9 @@ class MainWidget extends StatefulWidget {
 }
 
 class _MainWidgetState extends State<MainWidget> {
+  
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +91,20 @@ class _MainWidgetState extends State<MainWidget> {
             child: Scaffold(
             appBar: AppBar(
               actions: [
+                //updateAccountsDataFromServer
+                _isLoading ? const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 4)),
+                ) : IconButton(onPressed: () async{
+                  updateAccountsDataFromServer().then((value) {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  });
+                  setState(() {
+                    _isLoading = true;
+                  });
+                }, icon: const Icon(Icons.refresh)),
                 IconButton(
                     onPressed: () {
                       callToSupportDialog(context);
@@ -191,5 +208,9 @@ class _MainWidgetState extends State<MainWidget> {
       });
     }
     printLog('Accounts loaded from API: $countR');
+  }
+  
+  Future<void> updateAccountsDataFromServer() async {
+    return await runAccountsLoading();
   }
 }

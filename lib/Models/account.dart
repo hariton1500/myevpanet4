@@ -151,7 +151,7 @@ class Account {
             children: [
               Text(tarifName),
               Text('Абонплата: $tarifSum руб.'),
-              Text('Осталось дней: $daysRemain', style: TextStyle(color: daysRemain >= 3 ? Colors.green : daysRemain <=0 ? Colors.red : Colors.yellow)),
+              Text('Осталось дней: $daysRemain', style: TextStyle(color: daysRemain >= 3 ? Colors.green : (daysRemain <=0 ? Colors.red : Colors.orange))),
               Text('Адрес: $street, $house, $flat'),
             ],
           ),
@@ -255,9 +255,7 @@ class Account {
               ),
               ip == '' ? const SizedBox() : const Divider(),
               ip == '' ? const SizedBox() : Text('IP адрес: $ip'),
-              //Text('Рабочий IP:\n${isRealIp? 'Да' : 'Нет'}'),
-              //Text('Разрешенные тарифы:\n${tarifs.join(', ')}'),
-              //Text('Разрешенные тарифы:\n${tarifs.join(', ')}'),
+
             ]),
       ),
     );
@@ -592,6 +590,74 @@ class Account {
                   }
                 });
               },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget addDaysCard(BuildContext context, double daysToAdd, void Function(double) updateDaysState, String guid, void Function(Account) widgetUpdate) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.add_box),
+                const SizedBox(width: 8),
+                Text(
+                  'Добавление дней к пакету',
+                  maxLines: 3,
+                  overflow: TextOverflow.fade,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              children: [
+                const Text('Дополнительные дни:'),
+                Slider(
+                  min: 0,
+                  max: (balance ~/ 25).toDouble(),
+                  value: daysToAdd,
+                  divisions: balance ~/ 25,
+                  onChanged: (value) {
+                    updateDaysState(value);
+                  },
+                  label: daysToAdd.toInt().toString(),
+                  secondaryTrackValue: daysToAdd,
+                )
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: daysToAdd == 0 ? null : () async {
+                var result = await addDays(
+                    token: token, guid: guid, days: daysToAdd.toInt());
+                if (result != null) {
+                  Account? tempAcc =
+                      await getAccountDataFromAPI(
+                          token: token, guid: guid);
+                  if (tempAcc != null) {
+                    widgetUpdate(tempAcc);
+                    appState['accounts'][guid] = tempAcc;
+                    saveAccountDataToLocalStorage(
+                        acc: this, guid: guid);
+                  }
+                  updateDaysState(0);
+                  showScaffoldMessage(
+                      message: 'Дни добавлены!', context: context);
+                } else {
+                  showScaffoldMessage(
+                      message: 'Произошла ошибка. Попробуйте позже.',
+                      context: context);
+                }
+              },
+              child: const Text('Добавить дни к текущему пакету'),
             ),
           ],
         ),

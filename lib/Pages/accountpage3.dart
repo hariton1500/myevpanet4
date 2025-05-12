@@ -18,6 +18,9 @@ class AccountPage3 extends StatefulWidget {
 }
 
 class _AccountPage3State extends State<AccountPage3> {
+
+  double daysToAdd = 0;
+
   @override
   Widget build(BuildContext context) {
     print('AccountPage3 build');
@@ -72,6 +75,14 @@ class _AccountPage3State extends State<AccountPage3> {
 
                 // Settings Section
                 account.settingsSection(context, setState, filteredTarifs, widget.guid, widget.update),
+                const SizedBox(height: 16),
+
+                // Add days to active tariff
+                account.addDaysCard(context, daysToAdd, (v) {
+                  setState(() {
+                    daysToAdd = v;
+                  });
+                }, widget.guid, widget.update),
               ],
             ),
           ),

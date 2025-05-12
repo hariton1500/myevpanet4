@@ -211,3 +211,30 @@ Future<String?> postGetPaymentNo(
   }
   return null;
 }
+
+Future<String?> addDays({required String token,
+    required int days, required String guid}) async {
+  printLog('[addDays]');
+  printLog({'token': token, 'guid': guid, 'days': days});
+  try {
+    final response = await http.put(
+      Uri.parse('https://evpanet.com/api/apk/user/days'),
+      headers: {'token': token},
+      body: {'days': days.toString(), 'guid': guid},
+    );
+    if (response.statusCode >= 200 && response.statusCode < 210) {
+      var decoded = jsonDecode(response.body);
+      printLog('output: $decoded');
+      return decoded['message']['tarif_id'].toString();
+    } else if (response.statusCode >= 400 && response.statusCode < 410) {
+      lastApiErrorMessage = jsonDecode(response.body)['message'];
+      printLog(lastApiErrorMessage);
+      return null;
+    } else {
+      throw Exception('Failed to send message');
+    }
+  } catch (e) {
+    printLog('[addDays] $e');
+  }
+  return null;
+}
