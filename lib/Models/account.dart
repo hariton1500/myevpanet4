@@ -145,8 +145,16 @@ class Account {
             ],
           ),
           title: Text(name),
-          subtitle: Text(
-              '$tarifName\nАбонплата: $tarifSum руб.\nАдрес: $street, $house, $flat'),
+          subtitle: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(tarifName),
+              Text('Абонплата: $tarifSum руб.'),
+              Text('Осталось дней: $daysRemain', style: TextStyle(color: daysRemain >= 3 ? Colors.green : daysRemain <=0 ? Colors.red : Colors.yellow)),
+              Text('Адрес: $street, $house, $flat'),
+            ],
+          ),
           trailing: Text('Счет:\n${balance - debt} руб.'),
         ),
       ),
