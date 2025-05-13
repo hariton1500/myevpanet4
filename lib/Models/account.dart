@@ -598,70 +598,82 @@ class Account {
   }
 
   Widget addDaysCard(BuildContext context, double daysToAdd, void Function(double) updateDaysState, String guid, void Function(Account) widgetUpdate) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.add_box),
-                const SizedBox(width: 8),
-                Text(
-                  'Добавление дней к пакету',
-                  maxLines: 3,
-                  overflow: TextOverflow.fade,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              children: [
-                const Text('Дополнительные дни:'),
-                Slider(
-                  min: 0,
-                  max: (balance ~/ 25).toDouble(),
-                  value: daysToAdd,
-                  divisions: balance ~/ 25,
-                  onChanged: (value) {
-                    updateDaysState(value);
-                  },
-                  label: daysToAdd.toInt().toString(),
-                  secondaryTrackValue: daysToAdd,
-                )
-              ],
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: daysToAdd == 0 ? null : () async {
-                var result = await addDays(
-                    token: token, guid: guid, days: daysToAdd.toInt());
-                if (result != null) {
-                  Account? tempAcc =
-                      await getAccountDataFromAPI(
-                          token: token, guid: guid);
-                  if (tempAcc != null) {
-                    widgetUpdate(tempAcc);
-                    appState['accounts'][guid] = tempAcc;
-                    saveAccountDataToLocalStorage(
-                        acc: this, guid: guid);
+    return balance < priceOfDay ?
+      Card(
+        color: const Color.fromARGB(255, 238, 187, 187),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Недостаточно средств!', style: Theme.of(context).textTheme.titleMedium),
+              const Text('На Вашем счету недостаточно средств для добавления дополнительных дней.'),
+              Text('Минимальная сумма ${priceOfDay.toStringAsFixed(2)} руб.')
+            ]
+          ),
+        )) :
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.add_box),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Добавление дней к пакету',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                children: [
+                  const Text('Дополнительные дни:'),
+                  Slider(
+                    min: 0,
+                    max: (balance ~/ priceOfDay).toDouble(),
+                    value: daysToAdd,
+                    divisions: balance ~/ priceOfDay,
+                    onChanged: (value) {
+                      updateDaysState(value);
+                    },
+                    label: daysToAdd.toInt().toString(),
+                    secondaryTrackValue: daysToAdd,
+                  )
+                ],
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: daysToAdd == 0 ? null : () async {
+                  var result = await addDays(
+                      token: token, guid: guid, days: daysToAdd.toInt());
+                  if (result != null) {
+                    Account? tempAcc =
+                        await getAccountDataFromAPI(
+                            token: token, guid: guid);
+                    if (tempAcc != null) {
+                      widgetUpdate(tempAcc);
+                      appState['accounts'][guid] = tempAcc;
+                      saveAccountDataToLocalStorage(
+                          acc: this, guid: guid);
+                    }
+                    updateDaysState(0);
+                    showScaffoldMessage(
+                        message: 'Дни добавлены!', context: context);
+                  } else {
+                    showScaffoldMessage(
+                        message: 'Произошла ошибка. Попробуйте позже.',
+                        context: context);
                   }
-                  updateDaysState(0);
-                  showScaffoldMessage(
-                      message: 'Дни добавлены!', context: context);
-                } else {
-                  showScaffoldMessage(
-                      message: 'Произошла ошибка. Попробуйте позже.',
-                      context: context);
-                }
-              },
-              child: const Text('Добавить дни к текущему пакету'),
-            ),
-          ],
+                },
+                child: const Text('Добавить дни к текущему пакету'),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
 }

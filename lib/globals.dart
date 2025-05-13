@@ -4,6 +4,7 @@ import 'package:myevpanet4/Helpers/localstorage.dart';
 import 'package:myevpanet4/Models/account.dart';
 
 int currentId = 0;
+double priceOfDay = 25;
 
 Map<String, dynamic> appState = {
   'guids': <String>[],
