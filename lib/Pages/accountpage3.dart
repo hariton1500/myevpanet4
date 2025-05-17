@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myevpanet4/Dialogs/calltosupport.dart';
 import 'package:myevpanet4/Models/account.dart';
+import 'package:myevpanet4/Pages/accountseditpaget.dart';
 import 'package:myevpanet4/Pages/chat.dart';
 import 'package:myevpanet4/globals.dart';
 
@@ -52,6 +53,14 @@ class _AccountPage3State extends State<AccountPage3> {
                 callToSupportDialog(context);
               },
               icon: const Icon(Icons.call),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        AccountsSetupPage(update: (){widget.update(account!);})));
+              },
+              icon: const Icon(Icons.person_add),
             ),
           ],
         ),

@@ -84,7 +84,7 @@ class _MainWidgetState extends State<MainWidget> {
             //account: accounts.entries.first.value,
             guid: accounts.entries.first.key,
             update: (acc) {
-              setState(() {});
+              setState(() {runAccountsLoading();});
             },
           )
         : SafeArea(
